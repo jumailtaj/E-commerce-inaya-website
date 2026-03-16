@@ -2,14 +2,12 @@
 > @figma/my-make-file@0.0.1 build
 > vite build
 
-failed to load config from C:\Users\Victu\Downloads\E-commerce website UI design\vite.config.ts
-error during build:
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from C:\Users\Victu\node_modules\.vite-temp\vite.config.ts.timestamp-1773676289908-679e873322085.mjs
-    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:266:9)
-    at packageResolve (node:internal/modules/esm/resolve:767:81)
-    at moduleResolve (node:internal/modules/esm/resolve:853:18)
-    at defaultResolve (node:internal/modules/esm/resolve:983:11)
-    at #cachedDefaultResolve (node:internal/modules/esm/loader:717:20)
-    at ModuleLoader.resolve (node:internal/modules/esm/loader:694:38)
-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:308:38)
-    at ModuleJob._link (node:internal/modules/esm/module_job:183:49)
+[36mvite v6.3.5 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 1640 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.44 kB[22m[1m[22m[2m Γöé gzip:   0.29 kB[22m
+[2mdist/[22m[35massets/index-CTaGBPAd.css  [39m[1m[2m 98.15 kB[22m[1m[22m[2m Γöé gzip:  15.82 kB[22m
+[2mdist/[22m[36massets/index-Dow0z7bc.js   [39m[1m[2m334.43 kB[22m[1m[22m[2m Γöé gzip: 104.72 kB[22m
+[32mΓ£ô built in 2.38s[39m
