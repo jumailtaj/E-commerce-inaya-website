@@ -62,7 +62,7 @@ export function CartPage() {
                       {item.product.name}
                     </h3>
                     <p className="text-pink-600 mb-3">
-                      ${item.product.price.toFixed(2)}
+                      ₹{item.product.price.toFixed(2)}
                     </p>
 
                     {/* Quantity Controls */}
@@ -90,7 +90,7 @@ export function CartPage() {
                   {/* Price and Remove */}
                   <div className="flex sm:flex-col items-end sm:items-end justify-between sm:justify-start gap-4">
                     <p className="text-lg text-gray-800">
-                      ${(item.product.price * item.quantity).toFixed(2)}
+                      ₹{(item.product.price * item.quantity).toFixed(2)}
                     </p>
                     <button
                       onClick={() => removeFromCart(item.product.id)}
@@ -111,7 +111,7 @@ export function CartPage() {
           <div className="flex items-center justify-between mb-6">
             <span className="text-xl text-gray-800">Total</span>
             <span className="text-2xl text-pink-600">
-              ${getCartTotal().toFixed(2)}
+              ₹{getCartTotal().toFixed(2)}
             </span>
           </div>
           <Button

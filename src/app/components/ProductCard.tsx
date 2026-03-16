@@ -17,11 +17,11 @@ export function ProductCard({ product }: ProductCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
-        <div className="p-4">
-          <h3 className="text-gray-800 mb-1 group-hover:text-pink-600 transition-colors">
+        <div className="p-3">
+          <h3 className="text-gray-800 text-sm font-medium mb-1 truncate group-hover:text-pink-600 transition-colors">
             {product.name}
           </h3>
-          <p className="text-pink-600">${product.price.toFixed(2)}</p>
+          <p className="text-pink-600 text-sm font-semibold">₹{product.price.toFixed(2)}</p>
         </div>
       </div>
     </Link>

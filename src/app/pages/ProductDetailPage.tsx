@@ -73,7 +73,7 @@ export function ProductDetailPage() {
             <h1 className="text-3xl font-serif text-gray-800 mb-3">
               {product.name}
             </h1>
-            <p className="text-3xl text-pink-600 mb-6">${product.price.toFixed(2)}</p>
+            <p className="text-3xl font-semibold text-pink-600 mb-6">₹{product.price.toFixed(2)}</p>
 
             <p className="text-gray-600 mb-6 leading-relaxed">
               {product.description}

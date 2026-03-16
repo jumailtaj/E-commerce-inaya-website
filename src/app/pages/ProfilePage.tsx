@@ -88,7 +88,7 @@ export function ProfilePage() {
                     <p className="text-sm text-gray-500">{order.date}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-pink-600">${order.total.toFixed(2)}</p>
+                    <p className="text-pink-600 font-medium">₹{order.total.toFixed(2)}</p>
                     <span className={`text-sm px-3 py-1 rounded-full ${
                       order.status === 'Delivered'
                         ? 'bg-green-100 text-green-700'

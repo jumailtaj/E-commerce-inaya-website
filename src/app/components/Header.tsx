@@ -1,12 +1,14 @@
 import { Search, User, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Input } from './ui/input';
 import { useState } from 'react';
 
 export function Header() {
   const navigate = useNavigate();
   const { getCartCount } = useCart();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const cartCount = getCartCount();
 
@@ -41,25 +43,44 @@ export function Header() {
 
           {/* Icons */}
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/profile')}
-              className="p-2 hover:bg-pink-50 rounded-full transition-colors"
-              aria-label="Profile"
-            >
-              <User className="w-5 h-5 text-gray-700" />
-            </button>
-            <button
-              onClick={() => navigate('/cart')}
-              className="relative p-2 hover:bg-pink-50 rounded-full transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingCart className="w-5 h-5 text-gray-700" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            {isAuthenticated ? (
+              <>
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="p-2 hover:bg-pink-50 rounded-full transition-colors"
+                  aria-label="Profile"
+                >
+                  <User className="w-5 h-5 text-gray-700" />
+                </button>
+                <button
+                  onClick={() => navigate('/cart')}
+                  className="relative p-2 hover:bg-pink-50 rounded-full transition-colors"
+                  aria-label="Cart"
+                >
+                  <ShoppingCart className="w-5 h-5 text-gray-700" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-gray-700 hover:text-pink-600 font-medium px-4 py-2"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="bg-pink-600 hover:bg-pink-700 text-white font-medium px-4 py-2 rounded-md transition-colors shadow-sm"
+                >
+                  Sign up
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
