@@ -1,8 +1,10 @@
-# Dependencies
 node_modules/
 dist/
 build.log
 .env
+.vercel/
+.next/
+*.log
 
 
 # IDEs
