@@ -1,14 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
-import { ArrowLeft, CreditCard, Truck, ShieldCheck } from 'lucide-react';
-import { toast } from 'sonner';
+import api from '../../api';
 
 export function CheckoutPage() {
   const location = useLocation();
@@ -42,10 +32,7 @@ export function CheckoutPage() {
       toast.error('Please login to continue to checkout');
       navigate('/login', { state: { from: location.pathname } });
     }
-    if (itemsToCheckout.length === 0) {
-      navigate('/cart');
-    }
-  }, [isAuthenticated, itemsToCheckout, navigate, location.pathname]);
+  }, [isAuthenticated, navigate, location.pathname]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,19 +59,10 @@ export function CheckoutPage() {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
       // 0. Get Razorpay Key from backend
-      const configRes = await fetch('/api/orders/config/razorpay-key', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const configRes = await api.get('/orders/config/razorpay-key');
+      const { keyId } = configRes.data;
       
-      if (!configRes.ok) {
-        throw new Error('Failed to fetch payment configuration');
-      }
-
-      const { keyId } = await configRes.json();
       console.log('Razorpay Key fetched:', keyId);
 
       if (!keyId || keyId === 'YOUR_RAZORPAY_KEY_ID') {
@@ -92,26 +70,15 @@ export function CheckoutPage() {
       }
 
       // 1. Create Order on Backend
-      const orderResponse = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          items: itemsToCheckout.map(item => ({
-            product: item.product._id || item.product.id,
-            quantity: item.quantity
-          })),
-          shippingAddress
-        })
+      const orderRes = await api.post('/orders/create', {
+        items: itemsToCheckout.map(item => ({
+          product: item.product._id || item.product.id,
+          quantity: item.quantity
+        })),
+        shippingAddress
       });
 
-      const orderData = await orderResponse.json();
-
-      if (!orderResponse.ok) {
-        throw new Error(orderData.message || 'Failed to create order');
-      }
+      const orderData = orderRes.data;
 
       // 2. Initialize Razorpay Checkout
       const options = {
@@ -124,26 +91,18 @@ export function CheckoutPage() {
         handler: async function (response) {
           // 3. Verify Payment on Backend
           try {
-            const verifyResponse = await fetch('/api/verify-payment', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              })
+            const verifyRes = await api.post('/orders/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
             });
 
-            if (verifyResponse.ok) {
+            if (verifyRes.status === 200) {
               toast.success('Payment Successful!');
               if (!buyNowItem) clearCart();
               navigate('/profile', { state: { orderCompleted: true } });
             } else {
-              const verifyData = await verifyResponse.json();
-              toast.error(verifyData.message || 'Payment verification failed');
+              toast.error(verifyRes.data?.message || 'Payment verification failed');
             }
           } catch (err) {
             console.error(err);
@@ -168,11 +127,12 @@ export function CheckoutPage() {
 
     } catch (error) {
       console.error('Checkout error:', error);
-      toast.error(error.message || 'An error occurred during checkout');
+      toast.error(error.response?.data?.message || error.message || 'An error occurred during checkout');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-8">

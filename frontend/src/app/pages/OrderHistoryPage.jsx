@@ -1,12 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Separator } from '../components/ui/separator';
-import { Package, Calendar, MapPin, ChevronRight, ShoppingBag } from 'lucide-react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { Button } from '../components/ui/button';
-import { useNavigate } from 'react-router';
+import api from '../../api';
 
 export function OrderHistoryPage() {
   const { isAuthenticated } = useAuth();
@@ -17,24 +9,15 @@ export function OrderHistoryPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await fetch('/api/orders/my-orders', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setOrders(data);
-        }
+        const response = await api.get('/orders/my-orders');
+        setOrders(response.data);
       } catch (error) {
         console.error('Error fetching orders:', error);
       } finally {
         setLoading(false);
       }
     };
+
 
     if (isAuthenticated) {
       fetchOrders();

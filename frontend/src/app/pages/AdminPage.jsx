@@ -5,6 +5,7 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Upload, Pencil, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import api from '../api';
 
 export function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('isAdmin') === 'true');
@@ -33,9 +34,8 @@ export function AdminPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/products');
-      const data = await response.json();
-      setProducts(Array.isArray(data) ? data : []);
+      const response = await api.get('/products');
+      setProducts(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
@@ -77,29 +77,16 @@ export function AdminPage() {
     }
 
     try {
-      const url = editingId 
-        ? `/api/products/${editingId}`
-        : '/api/products';
+      const response = editingId 
+        ? await api.put(`/products/${editingId}`, data)
+        : await api.post('/products', data);
       
-      const method = editingId ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        body: data,
-      });
-
-      const result = await response.json().catch(() => ({ message: 'Invalid server response' }));
-
-      if (response.ok) {
-        toast.success(editingId ? 'Product updated successfully!' : 'Product added successfully!');
-        resetForm();
-        fetchProducts();
-      } else {
-        toast.error(result.message || 'Failed to process request');
-      }
+      toast.success(editingId ? 'Product updated successfully!' : 'Product added successfully!');
+      resetForm();
+      fetchProducts();
     } catch (error) {
       console.error('Error processing product:', error);
-      toast.error('Error connecting to server or network issue');
+      toast.error(error.response?.data?.message || 'Failed to process request');
     } finally {
       setIsSubmitting(false);
     }
@@ -138,21 +125,15 @@ export function AdminPage() {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const response = await fetch(`/api/products/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        toast.success('Product deleted successfully');
-        fetchProducts();
-      } else {
-        toast.error('Failed to delete product');
-      }
+      await api.delete(`/products/${id}`);
+      toast.success('Product deleted successfully');
+      fetchProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast.error('Error connecting to server');
+      toast.error(error.response?.data?.message || 'Failed to delete product');
     }
   };
+
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
