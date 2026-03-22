@@ -1,0 +1,15 @@
+
+> inaya-frontend@1.0.0 build
+> vite build
+
+[36mvite v6.3.5 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 53 modules transformed.
+Γ£ù Build failed in 727ms
+error during build:
+Could not resolve "../api" from "src/app/pages/AdminPage.jsx"
+file: C:/Users/Victu/Downloads/E-commerce inaya website/frontend/src/app/pages/AdminPage.jsx
+    at getRollupError (file:///C:/Users/Victu/Downloads/E-commerce%20inaya%20website/frontend/node_modules/rollup/dist/es/shared/parseAst.js:406:41)
+    at error (file:///C:/Users/Victu/Downloads/E-commerce%20inaya%20website/frontend/node_modules/rollup/dist/es/shared/parseAst.js:402:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///C:/Users/Victu/Downloads/E-commerce%20inaya%20website/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21765:24)
+    at file:///C:/Users/Victu/Downloads/E-commerce%20inaya%20website/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21725:26

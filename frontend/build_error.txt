@@ -1,0 +1,21 @@
+
+> inaya-frontend@1.0.0 build
+> vite build
+
+[36mvite v6.3.5 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 4 modules transformed.
+Γ£ù Build failed in 76ms
+error during build:
+[@tailwindcss/vite:generate:build] Can't resolve 'tw-animate-css' in 'C:\Users\Victu\Downloads\E-commerce inaya website\frontend\src\styles'
+file: C:/Users/Victu/Downloads/E-commerce inaya website/frontend/src/styles/index.css
+    at finishWithoutResolve (C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:587:18)
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:679:14
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:740:5
+    at eval (eval at create (C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:740:5
+    at eval (eval at create (C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:27:1)
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\DescriptionFilePlugin.js:89:43
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:740:5
+    at eval (eval at create (C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\tapable\lib\HookCodeFactory.js:31:10), <anonymous>:15:1)
+    at C:\Users\Victu\Downloads\E-commerce inaya website\frontend\node_modules\enhanced-resolve\lib\Resolver.js:740:5
