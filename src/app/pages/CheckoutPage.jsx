@@ -74,7 +74,7 @@ export function CheckoutPage() {
     try {
       const token = localStorage.getItem('token');
       // 0. Get Razorpay Key from backend
-      const configRes = await fetch('http://localhost:5000/api/orders/config/razorpay-key', {
+      const configRes = await fetch('/api/orders/config/razorpay-key', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -92,7 +92,7 @@ export function CheckoutPage() {
       }
 
       // 1. Create Order on Backend
-      const orderResponse = await fetch('http://localhost:5000/api/orders/create', {
+      const orderResponse = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export function CheckoutPage() {
         handler: async function (response) {
           // 3. Verify Payment on Backend
           try {
-            const verifyResponse = await fetch('http://localhost:5000/api/orders/verify', {
+            const verifyResponse = await fetch('/api/orders/verify', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

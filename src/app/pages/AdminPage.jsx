@@ -33,7 +33,7 @@ export function AdminPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch('/api/products');
       const data = await response.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -78,8 +78,8 @@ export function AdminPage() {
 
     try {
       const url = editingId 
-        ? `http://localhost:5000/api/products/${editingId}`
-        : 'http://localhost:5000/api/products';
+        ? `/api/products/${editingId}`
+        : '/api/products';
       
       const method = editingId ? 'PUT' : 'POST';
 
@@ -138,7 +138,7 @@ export function AdminPage() {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
       });
 
