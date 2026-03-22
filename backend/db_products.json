@@ -1,0 +1,13 @@
+[dotenv@17.3.1] injecting env (8) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Products in DB: [
+  {
+    "_id": "69bbe9f6d059f450106461df",
+    "name": "hi",
+    "description": "how are you",
+    "price": 30,
+    "stock": 2,
+    "image": "/uploads/1773922806898-cancelled cheque.jpeg",
+    "createdAt": "2026-03-19T12:20:06.902Z",
+    "__v": 0
+  }
+]
