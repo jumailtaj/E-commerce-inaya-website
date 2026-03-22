@@ -29,6 +29,9 @@ app.use((req, res, next) => {
 });
 
 // Normalized Routes (Direct mapping as requested)
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API is working" });
+});
 app.get("/api/products", productController.getProducts);
 app.get("/api/product/:id", productController.getProductById);
 app.post("/api/create-order", protect, orderController.createOrder);
