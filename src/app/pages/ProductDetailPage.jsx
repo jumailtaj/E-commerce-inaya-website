@@ -29,10 +29,9 @@ export function ProductDetailPage() {
 
       // If not found, fetch from API
       try {
-        const data = await api.get('/products');
-        const productsList = data.products || data;
-        const apiProd = productsList.find((p) => p._id === id || p.id === id);
-        if (apiProd) {
+        const response = await fetch(`/api/product/${id}`);
+        if (response.ok) {
+          const apiProd = await response.json();
           setProduct(apiProd);
         }
       } catch (error) {

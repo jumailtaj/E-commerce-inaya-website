@@ -92,7 +92,7 @@ export function CheckoutPage() {
       }
 
       // 1. Create Order on Backend
-      const orderResponse = await fetch('/api/orders/create', {
+      const orderResponse = await fetch('/api/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export function CheckoutPage() {
         handler: async function (response) {
           // 3. Verify Payment on Backend
           try {
-            const verifyResponse = await fetch('/api/orders/verify', {
+            const verifyResponse = await fetch('/api/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
