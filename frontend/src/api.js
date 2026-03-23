@@ -1,12 +1,16 @@
 import axios from 'axios';
 
+const API_URL = "https://e-commerce-inaya-website-production.up.railway.app/api";
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: API_URL,
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
+export default api;
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
