@@ -7,7 +7,7 @@ import { Minus, Plus, ArrowLeft } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { toast } from 'sonner';
-import api from '../../api';
+import api from '../../api/axios';
 
 export function ProductDetailPage() {
   const { id } = useParams();

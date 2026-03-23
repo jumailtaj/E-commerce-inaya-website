@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { Hero } from '../components/Hero';
 import { products as staticProducts } from '../data/products';
-import api from '../../api';
+import api from '../../api/axios';
 
 export function HomePage() {
   const [products, setProducts] = useState([]);

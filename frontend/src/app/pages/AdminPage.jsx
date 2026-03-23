@@ -5,7 +5,7 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Upload, Pencil, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import api from '../../api';
+import api from '../../api/axios';
 
 export function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('isAdmin') === 'true');
