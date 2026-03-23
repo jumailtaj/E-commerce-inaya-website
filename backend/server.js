@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || "https://e-commerce-inaya-website-4qsf.vercel.app",
+  origin: "https://e-commerce-inaya-website-4qsf.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
