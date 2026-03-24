@@ -7,6 +7,4 @@ const api = axios.create({
   },
 });
 
-console.log("AXIOS ACTIVE");
-
 export default api;
