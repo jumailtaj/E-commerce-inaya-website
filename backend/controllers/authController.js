@@ -4,7 +4,11 @@ const User = require('../models/user');
 
 // Generate JWT
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error("CRITICAL WARNING: process.env.JWT_SECRET is undefined in Railway! Using temporary fallback to prevent 500 error.");
+  }
+  return jwt.sign({ id }, secret || "temporary_fallback_secret_12345", {
     expiresIn: '30d',
   });
 };
