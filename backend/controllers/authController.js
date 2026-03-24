@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 // Generate JWT
@@ -14,6 +14,7 @@ const generateToken = (id) => {
 // @access  Public
 const signup = async (req, res) => {
   try {
+    console.log("Incoming data:", req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -49,8 +50,8 @@ const signup = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
-    console.error('Signup Error:', error);
-    res.status(500).json({ message: error.message });
+    console.error("SIGNUP ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
