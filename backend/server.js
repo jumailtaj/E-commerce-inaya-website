@@ -16,7 +16,11 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: "https://e-commerce-inaya-website-4qsf.vercel.app",
+  origin: [
+    "https://e-commerce-inaya-website-4qsf.vercel.app",
+    "https://e-commerce-inaya-website.vercel.app",
+    "http://localhost:5173"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));

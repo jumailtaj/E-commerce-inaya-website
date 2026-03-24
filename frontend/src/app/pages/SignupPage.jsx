@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { Input } from '../components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
 
 export function SignupPage() {
   const [name, setName] = useState('');
@@ -10,6 +11,8 @@ export function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -83,14 +86,21 @@ export function SignupPage() {
               <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
+                  className="w-full pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
             
@@ -98,14 +108,21 @@ export function SignupPage() {
               <label className="block text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <Input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full"
+                  className="w-full pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
