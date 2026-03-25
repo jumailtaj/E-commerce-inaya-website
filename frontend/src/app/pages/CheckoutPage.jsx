@@ -1,5 +1,15 @@
 import api from '../../api/axios';
-
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
+import { ArrowLeft, Truck, CreditCard, ShieldCheck } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/card';
+import { Label } from '../components/ui/label';
+import { Input } from '../components/ui/input';
+import { Separator } from '../components/ui/separator';
+import { Button } from '../components/ui/button';
 export function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();

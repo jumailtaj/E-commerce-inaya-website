@@ -1,5 +1,13 @@
 import api from '../../api/axios';
-
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { ShoppingBag, Package, Calendar, MapPin, ChevronRight } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Separator } from '../components/ui/separator';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 export function OrderHistoryPage() {
   const { isAuthenticated } = useAuth();
   const [orders, setOrders] = useState([]);
