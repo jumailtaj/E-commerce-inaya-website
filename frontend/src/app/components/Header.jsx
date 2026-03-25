@@ -1,5 +1,5 @@
 import { Search, ShoppingCart } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { useCart } from '../context/CartContext';
 import { Input } from './ui/input';
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { useDebounce } from '../hooks/useDebounce';
 
 export function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { getCartCount } = useCart();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 500);
@@ -15,14 +16,17 @@ export function Header() {
 
   useEffect(() => {
     if (debouncedSearch) {
-      console.log('Debounced API search for:', debouncedSearch);
-      // fetchProducts(debouncedSearch);
+      navigate(`/?search=${encodeURIComponent(debouncedSearch)}`);
+    } else if (searchQuery === '' && location.search.includes('search=')) {
+      navigate('/');
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, navigate, location.search]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('Searching for:', searchQuery);
+    if (searchQuery.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (

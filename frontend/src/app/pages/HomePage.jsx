@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { ProductCard } from '../components/ProductCard';
 import { Hero } from '../components/Hero';
 import { products as staticProducts } from '../data/products';
 import api from '../../api/axios';
 
 export function HomePage() {
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('search');
+  
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -17,6 +21,9 @@ export function HomePage() {
         const params = {};
         if (selectedCategory !== 'All') {
           params.category = selectedCategory;
+        }
+        if (search) {
+          params.search = search;
         }
         const data = await api.get('/products', { params });
         const productsList = data.products || data;
@@ -33,7 +40,7 @@ export function HomePage() {
       }
     };
     fetchProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, search]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">

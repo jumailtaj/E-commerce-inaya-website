@@ -154,7 +154,8 @@ exports.getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
       .populate('items.product', 'title image')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -166,7 +167,10 @@ exports.getMyOrders = async (req, res) => {
 // @access  Private
 exports.getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('items.product', 'title image price');
+    const order = await Order.findById(req.params.id)
+      .populate('items.product', 'title image price')
+      .lean();
+      
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }

@@ -3,12 +3,19 @@ const Product = require('../models/product');
 // Get all products
 const getProducts = async (req, res) => {
   try {
-    const { page = 1, limit = 20, category, subcategory } = req.query;
+    const { page = 1, limit = 20, category, subcategory, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     let query = {};
     if (category) query.category = category;
     if (subcategory) query.subcategory = subcategory;
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
 
     const products = await Product.find(query)
       .select('-__v')
