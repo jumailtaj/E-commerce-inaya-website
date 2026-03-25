@@ -8,8 +8,7 @@ import { toast } from 'sonner';
 import api from '../../api/axios';
 
 export function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('isAdmin') === 'true');
-  const [adminAuth, setAdminAuth] = useState({ name: '', password: '' });
+  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('adminAuthenticated') === 'true');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,17 +41,6 @@ export function AdminPage() {
       setProducts([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    if (adminAuth.name === 'admin' && adminAuth.password === 'admin') {
-      setIsAdmin(true);
-      localStorage.setItem('isAdmin', 'true');
-      toast.success('Admin logged in');
-    } else {
-      toast.error('Invalid admin credentials');
     }
   };
 
@@ -148,45 +136,7 @@ export function AdminPage() {
   };
 
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-pink-50 px-4">
-        <form onSubmit={handleAdminLogin} className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md border border-pink-100">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-serif text-gray-800 mb-2">Admin Login</h2>
-            <p className="text-gray-600 italic font-medium">Please sign in to access the dashboard</p>
-          </div>
-          <div className="space-y-5">
-            <div>
-              <Label htmlFor="admin-name">Name</Label>
-              <Input 
-                id="admin-name"
-                value={adminAuth.name} 
-                onChange={e => setAdminAuth({...adminAuth, name: e.target.value})} 
-                placeholder="admin" 
-                required 
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
-              />
-            </div>
-            <div>
-              <Label htmlFor="admin-password">Password</Label>
-              <Input 
-                id="admin-password"
-                type="password" 
-                value={adminAuth.password} 
-                onChange={e => setAdminAuth({...adminAuth, password: e.target.value})} 
-                placeholder="admin" 
-                required 
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
-              />
-            </div>
-            <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700 text-white py-6 rounded-xl shadow-lg transition-all active:scale-95">
-              Login as Admin
-            </Button>
-            <p className="text-center text-xs text-gray-400 mt-4">Demo credentials: admin / admin</p>
-          </div>
-        </form>
-      </div>
-    );
+    return null; // Should be handled by AdminRoute
   }
 
   return (
@@ -366,7 +316,7 @@ export function AdminPage() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-serif text-gray-800">Existing Products</h2>
             <Button 
-              onClick={() => { setIsAdmin(false); localStorage.removeItem('isAdmin'); }} 
+              onClick={() => { setIsAdmin(false); localStorage.removeItem('adminAuthenticated'); }} 
               variant="outline" 
               className="text-gray-500 hover:text-red-500 rounded-full border-gray-200"
             >

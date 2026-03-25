@@ -37,10 +37,13 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
+    const role = (req.body.adminSecret === process.env.ADMIN_SECRET) ? 'admin' : 'user';
+
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
+      role
     });
 
     if (user) {
@@ -74,6 +77,7 @@ const login = async (req, res) => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user._id),
       });
     } else {
