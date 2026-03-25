@@ -22,9 +22,10 @@ export function Footer() {
           <div>
             <h4 className="text-gray-800 mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">Shipping Info</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">Returns</a></li>
+              <li><Link to="/shipping-policy" className="text-gray-600 hover:text-pink-600 transition-colors">Shipping Info</Link></li>
+              <li><Link to="/refund-policy" className="text-gray-600 hover:text-pink-600 transition-colors">Refund Policy</Link></li>
+              <li><Link to="/privacy-policy" className="text-gray-600 hover:text-pink-600 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms-and-conditions" className="text-gray-600 hover:text-pink-600 transition-colors">Terms & Conditions</Link></li>
             </ul>
           </div>
 

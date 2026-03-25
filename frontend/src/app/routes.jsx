@@ -24,6 +24,10 @@ const LoginPage = lazyImport(() => import('./pages/LoginPage'), 'LoginPage');
 const SignupPage = lazyImport(() => import('./pages/SignupPage'), 'SignupPage');
 const CheckoutPage = lazyImport(() => import('./pages/CheckoutPage'), 'CheckoutPage');
 const OrderHistoryPage = lazyImport(() => import('./pages/OrderHistoryPage'), 'OrderHistoryPage');
+const PrivacyPolicy = lazyImport(() => import('./pages/PrivacyPolicy'), 'PrivacyPolicy');
+const TermsAndConditions = lazyImport(() => import('./pages/TermsAndConditions'), 'TermsAndConditions');
+const RefundPolicy = lazyImport(() => import('./pages/RefundPolicy'), 'RefundPolicy');
+const ShippingPolicy = lazyImport(() => import('./pages/ShippingPolicy'), 'ShippingPolicy');
 
 const withSuspense = (Component) => (
   <Suspense fallback={<LoadingFallback />}>
@@ -39,6 +43,10 @@ export const router = createBrowserRouter([
       { index: true, element: withSuspense(HomePage) },
       { path: 'product/:id', element: withSuspense(ProductDetailPage) },
       { path: 'cart', element: withSuspense(CartPage) },
+      { path: 'privacy-policy', element: withSuspense(PrivacyPolicy) },
+      { path: 'terms-and-conditions', element: withSuspense(TermsAndConditions) },
+      { path: 'refund-policy', element: withSuspense(RefundPolicy) },
+      { path: 'shipping-policy', element: withSuspense(ShippingPolicy) },
       { 
         element: <ProtectedRoute />,
         children: [
