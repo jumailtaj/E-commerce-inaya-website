@@ -1,22 +1,32 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { toast } from 'sonner';
+import api from '../../api/axios';
 
 export function AdminLoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'admin') {
-      localStorage.setItem('adminAuthenticated', 'true');
-      toast.success('Admin login successful!');
-      navigate('/admin');
-    } else {
-      toast.error('Invalid admin credentials');
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const user = response.data;
+      
+      if (user.role === 'admin') {
+        localStorage.setItem('adminAuthenticated', 'true');
+        localStorage.setItem('token', user.token);
+        localStorage.setItem('user', JSON.stringify(user));
+        toast.success('Admin login successful!');
+        navigate('/admin');
+      } else {
+        toast.error('Access denied: Unauthorized role');
+      }
+    } catch (error) {
+      console.error('Admin login error:', error);
+      toast.error(error.response?.data?.message || 'Invalid admin credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,15 +42,16 @@ export function AdminLoginPage() {
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Username
+                Email Address
               </label>
               <div className="mt-1">
                 <Input
-                  type="text"
+                  type="email"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>
@@ -56,6 +67,7 @@ export function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -63,9 +75,10 @@ export function AdminLoginPage() {
             <div>
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-pink-600 hover:bg-pink-700 text-white"
               >
-                Admin Sign In
+                {loading ? 'Authenticating...' : 'Admin Sign In'}
               </Button>
             </div>
           </form>

@@ -5,32 +5,49 @@ import { Input } from '../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
 
 export function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    adminSecret: ''
+  });
+  const [error, setError] = useState(null); // Kept error state for existing display logic
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showAdminField, setShowAdminField] = useState(false); // Added showAdminField state
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSignup = async (e) => { // Renamed from handleSubmit to handleSignup to match original
     e.preventDefault();
-    setError(null);
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    setError(null); // Clear previous error
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match"); // Use existing error state
+      toast.error('Passwords do not match'); // Also use toast for consistency with new snippet
       return;
     }
+
     setLoading(true);
     try {
-      const result = await signup(name, email, password);
+      // Adapt to the existing signup context function
+      const result = await signup(formData.name, formData.email, formData.password, formData.adminSecret);
       if (result.success) {
+        toast.success('Account created successfully!'); // Added toast
         navigate('/');
       } else {
-        setError(result.message);
+        setError(result.message); // Use existing error state
+        toast.error(result.message || 'Failed to create account'); // Also use toast
       }
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to create account'); // Use existing error state
+      toast.error(err.response?.data?.message || 'Failed to create account'); // Also use toast
     } finally {
       setLoading(false);
     }
@@ -126,13 +143,41 @@ export function SignupPage() {
               </div>
             </div>
 
+            <div className="flex items-center justify-between py-2">
+              <button
+                type="button"
+                onClick={() => setShowAdminField(!showAdminField)}
+                className="text-xs text-pink-400 hover:text-pink-600 transition-colors"
+              >
+                {showAdminField ? 'Hide Admin Options' : 'Signup as Admin?'}
+              </button>
+            </div>
+
+            {showAdminField && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="block text-sm font-medium text-gray-700">
+                  Admin Secret Key
+                </label>
+                <div className="mt-1">
+                  <Input
+                    name="adminSecret"
+                    type="password"
+                    value={formData.adminSecret}
+                    onChange={handleChange}
+                    placeholder="Enter secret key if you are an admin"
+                    className="w-full bg-pink-50/50"
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
                 disabled={loading}
                 className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {loading ? 'Signing up...' : 'Sign up'}
+                {loading ? 'Creating Account...' : 'Sign Up'}
               </button>
             </div>
           </form>
