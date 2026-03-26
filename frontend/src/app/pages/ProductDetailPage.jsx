@@ -30,9 +30,15 @@ export function ProductDetailPage() {
       // If not found, fetch from API
       try {
         const response = await api.get(`/products/${id}`);
-        setProduct(response.data);
+        if (response.data) {
+          setProduct(response.data);
+        } else {
+          toast.error('Product data is empty');
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
+        const message = error.response?.data?.message || 'Failed to fetch product details';
+        toast.error(message);
       } finally {
         setLoading(false);
       }
