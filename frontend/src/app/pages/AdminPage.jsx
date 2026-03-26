@@ -34,10 +34,13 @@ export function AdminPage() {
     setLoading(true);
     try {
       const response = await api.get('/products');
-      setProducts(Array.isArray(response.data) ? response.data : []);
+      // The backend returns { products: [], total: 0, ... }
+      const productsData = response.data.products || response.data;
+      setProducts(Array.isArray(productsData) ? productsData : []);
     } catch (error) {
       console.error('Error fetching products:', error);
-      toast.error('Failed to load products');
+      const message = error.response?.data?.message || error.message || 'Failed to load products';
+      toast.error(message);
       setProducts([]);
     } finally {
       setLoading(false);
@@ -74,7 +77,13 @@ export function AdminPage() {
       fetchProducts();
     } catch (error) {
       console.error('Error processing product:', error);
-      toast.error(error.response?.data?.message || 'Failed to process request');
+      // Detailed error reporting
+      const status = error.response?.status;
+      const serverMessage = error.response?.data?.message;
+      const axiosMessage = error.message;
+      
+      const diagnosticMessage = serverMessage || axiosMessage || `Unexpected Error (Status: ${status || 'N/A'})`;
+      toast.error(diagnosticMessage);
     } finally {
       setIsSubmitting(false);
     }

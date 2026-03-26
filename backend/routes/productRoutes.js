@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { protect, admin } = require('../middleware/authMiddleware');
+const productController = require('../controllers/productController');
+const upload = require('../middleware/multerConfig');
 
 router.get('/', productController.getProducts);
 router.post('/', protect, admin, upload.single('image'), productController.createProduct);
