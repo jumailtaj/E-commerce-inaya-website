@@ -43,6 +43,7 @@ app.get("/api/test", (req, res) => {
 // Direct endpoints
 app.get("/api/products", productController.getProducts);
 app.get("/api/product/:id", productController.getProductById);
+app.get("/api/products/:id", productController.getProductById);
 app.post("/api/create-order", protect, orderController.createOrder);
 app.post("/api/verify-payment", protect, orderController.verifyPayment);
 
