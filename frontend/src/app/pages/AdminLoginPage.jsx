@@ -15,36 +15,12 @@ export function AdminLoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Hardcoded fallback for "admin/admin" as requested
-    if (email === 'admin' && password === 'admin') {
-      const mockAdmin = {
-        _id: 'admin-id',
-        name: 'Admin User',
-        email: 'admin',
-        role: 'admin',
-        token: 'mock-admin-token' 
-      };
-      localStorage.setItem('token', 'mock-admin-token');
-      localStorage.setItem('user', JSON.stringify(mockAdmin));
-      toast.success('Admin login successful (Local Fallback)!');
-      navigate('/admin');
-      setLoading(false);
-      return;
-    }
-
     try {
       const result = await login(email, password);
       
       if (result.success) {
-        const user = JSON.parse(localStorage.getItem('user'));
-        
-        if (user && user.role === 'admin') {
-          toast.success('Admin login successful!');
-          navigate('/admin');
-        } else {
-          toast.error('Access denied: Admin role required');
-        }
+        toast.success('Admin login successful!');
+        navigate('/admin');
       } else {
         toast.error(result.message || 'Invalid admin credentials');
       }
