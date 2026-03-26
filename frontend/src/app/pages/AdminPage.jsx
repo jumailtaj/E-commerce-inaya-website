@@ -195,7 +195,7 @@ export function AdminPage() {
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g., Elegant Pearl Hair Clip"
                 required
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
               />
             </div>
 
@@ -209,7 +209,7 @@ export function AdminPage() {
                 placeholder="Describe the product features, materials, and style..."
                 rows={4}
                 required
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
               />
             </div>
 
@@ -224,7 +224,7 @@ export function AdminPage() {
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 placeholder="24.99"
                 required
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
               />
             </div>
 
@@ -238,7 +238,7 @@ export function AdminPage() {
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                 placeholder="50"
                 required
-                className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                className="mt-1 rounded-lg border-gray-300 focus:border-pink-300 focus:ring-pink-200 text-gray-900"
               />
             </div>
 
@@ -252,7 +252,7 @@ export function AdminPage() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   placeholder="e.g., Clips"
                   required
-                  className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                  className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
                 />
               </div>
 
@@ -265,7 +265,7 @@ export function AdminPage() {
                   onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                   placeholder="e.g., Pearl"
                   required
-                  className="mt-1 rounded-lg border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                  className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
                 />
               </div>
             </div>
