@@ -6,20 +6,37 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 
 export function AdminLoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    // Hardcoded fallback for "admin/admin" as requested
+    if (email === 'admin' && password === 'admin') {
+      const mockAdmin = {
+        _id: 'admin-id',
+        name: 'Admin User',
+        email: 'admin',
+        role: 'admin',
+        token: 'mock-admin-token' 
+      };
+      localStorage.setItem('token', 'mock-admin-token');
+      localStorage.setItem('user', JSON.stringify(mockAdmin));
+      toast.success('Admin login successful (Local Fallback)!');
+      navigate('/admin');
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await login(email, password);
       
       if (result.success) {
-        // The AuthContext login already sets the user and token in localStorage
         const user = JSON.parse(localStorage.getItem('user'));
         
         if (user && user.role === 'admin') {

@@ -12,11 +12,11 @@ import api from '../../api/axios';
 export function AdminPage() {
   const { user, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [editingId, setEditingId] = React.useState(null);
+  const [formData, setFormData] = React.useState({
     title: '',
     description: '',
     price: '',
@@ -25,16 +25,16 @@ export function AdminPage() {
     subcategory: '',
     image: null
   });
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = React.useState(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) {
       toast.error('Admin access required');
       navigate('/admin/login');
     }
   }, [user, authLoading, navigate]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (user && user.role === 'admin') {
       fetchProducts();
     }
