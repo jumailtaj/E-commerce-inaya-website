@@ -9,17 +9,6 @@ const protect = async (req, res, next) => {
       // Get token from header
       token = req.headers.authorization.split(' ')[1];
 
-      // Check for mock-admin-token bypass
-      if (token === 'mock-admin-token') {
-        req.user = {
-          _id: 'admin-id',
-          name: 'Admin User',
-          email: 'admin',
-          role: 'admin'
-        };
-        return next();
-      }
-
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_fallback_secret_key_here');
 

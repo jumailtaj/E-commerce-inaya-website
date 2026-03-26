@@ -195,7 +195,7 @@ export function AdminPage() {
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g., Elegant Pearl Hair Clip"
                 required
-                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
+                className="mt-1 rounded-lg border-gray-400 focus:border-pink-300 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
               />
             </div>
 

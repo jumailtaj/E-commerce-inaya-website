@@ -44,16 +44,16 @@ export function AdminLoginPage() {
           <form className="space-y-6" onSubmit={handleLogin} noValidate>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Username
+                Email Address
               </label>
               <div className="mt-1">
                 <Input
-                  type="text"
+                  type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
-                  placeholder="admin"
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>
