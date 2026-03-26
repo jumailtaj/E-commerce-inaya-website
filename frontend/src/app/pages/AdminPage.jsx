@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -8,7 +10,8 @@ import { toast } from 'sonner';
 import api from '../../api/axios';
 
 export function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('adminAuthenticated') === 'true');
+  const { user, logout, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,10 +28,17 @@ export function AdminPage() {
   const [preview, setPreview] = useState(null);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (!authLoading && (!user || user.role !== 'admin')) {
+      toast.error('Admin access required');
+      navigate('/admin/login');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
       fetchProducts();
     }
-  }, [isAdmin]);
+  }, [user]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -144,8 +154,12 @@ export function AdminPage() {
     }
   };
 
-  if (!isAdmin) {
-    return null; // Should be handled by AdminRoute
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Verifying admin session...</div>;
+  }
+
+  if (!user || user.role !== 'admin') {
+    return null; // Will be handled by the useEffect redirection
   }
 
   return (
@@ -325,7 +339,7 @@ export function AdminPage() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-serif text-gray-800">Existing Products</h2>
             <Button 
-              onClick={() => { setIsAdmin(false); localStorage.removeItem('adminAuthenticated'); }} 
+              onClick={() => { logout(); navigate('/admin/login'); }} 
               variant="outline" 
               className="text-gray-500 hover:text-red-500 rounded-full border-gray-200"
             >

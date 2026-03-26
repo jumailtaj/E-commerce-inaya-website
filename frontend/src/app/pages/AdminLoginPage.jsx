@@ -1,30 +1,39 @@
-import api from '../../api/axios';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { toast } from 'sonner';
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const user = response.data;
+      const result = await login(email, password);
       
-      if (user.role === 'admin') {
-        localStorage.setItem('adminAuthenticated', 'true');
-        localStorage.setItem('token', user.token);
-        localStorage.setItem('user', JSON.stringify(user));
-        toast.success('Admin login successful!');
-        navigate('/admin');
+      if (result.success) {
+        // The AuthContext login already sets the user and token in localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        if (user && user.role === 'admin') {
+          toast.success('Admin login successful!');
+          navigate('/admin');
+        } else {
+          toast.error('Access denied: Admin role required');
+        }
       } else {
-        toast.error('Access denied: Unauthorized role');
+        toast.error(result.message || 'Invalid admin credentials');
       }
     } catch (error) {
       console.error('Admin login error:', error);
-      toast.error(error.response?.data?.message || 'Invalid admin credentials');
+      toast.error('An unexpected error occurred during login');
     } finally {
       setLoading(false);
     }
