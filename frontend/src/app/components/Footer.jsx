@@ -32,9 +32,9 @@ export function Footer() {
           <div>
             <h4 className="text-gray-800 mb-4">Follow Us</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">Instagram</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">facebook</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">youtube</a></li>
+              <li><a href="https://www.instagram.com/inayaadotcom/" className="text-gray-600 hover:text-pink-600 transition-colors">Instagram</a></li>
+              <li><a href="https://www.facebook.com/profile.php?id=61576641383862" className="text-gray-600 hover:text-pink-600 transition-colors">facebook</a></li>
+              <li><a href="https://www.youtube.com/@inayaafancystore" className="text-gray-600 hover:text-pink-600 transition-colors">youtube</a></li>
             </ul>
           </div>
         </div>
