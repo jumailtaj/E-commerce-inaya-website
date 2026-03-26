@@ -72,12 +72,12 @@ export function AdminLoginPage() {
               </label>
               <div className="mt-1">
                 <Input
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
-                  placeholder="admin@example.com"
+                  placeholder="admin"
                 />
               </div>
             </div>
