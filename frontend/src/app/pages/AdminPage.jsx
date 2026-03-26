@@ -45,13 +45,18 @@ export function AdminPage() {
     try {
       const response = await api.get('/products');
       // The backend returns { products: [], total: 0, ... }
-      const productsData = response.data.products || response.data;
-      setProducts(Array.isArray(productsData) ? productsData : []);
+      const productsList = response.data.products || (Array.isArray(response.data) ? response.data : null);
+      if (Array.isArray(productsList)) {
+        setProducts(productsList);
+      } else {
+        console.error('Invalid products data format:', response.data);
+        toast.error('Unable to parse product list data');
+        setProducts([]); // Ensure products are cleared if data is invalid
+      }
     } catch (error) {
-      console.error('Error fetching products:', error);
-      const message = error.response?.data?.message || error.message || 'Failed to load products';
-      toast.error(message);
-      setProducts([]);
+      console.error('Fetch products error:', error);
+      toast.error('Failed to load existing products');
+      setProducts([]); // Ensure products are cleared on error
     } finally {
       setLoading(false);
     }

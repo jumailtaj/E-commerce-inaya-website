@@ -25,12 +25,16 @@ export function HomePage() {
         if (search) {
           params.search = search;
         }
-        const data = await api.get('/products', { params });
-        const productsList = data.products || data;
-        if (Array.isArray(productsList)) {
+        const response = await api.get('/products', { params });
+        const productsList = response.data.products || (Array.isArray(response.data) ? response.data : null);
+        
+        if (productsList && productsList.length > 0) {
           setProducts(productsList);
-        } else {
+        } else if (!params.search && selectedCategory === 'All') {
+          // Only fallback to static if not searching/filtering and no live products
           setProducts(staticProducts);
+        } else {
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
