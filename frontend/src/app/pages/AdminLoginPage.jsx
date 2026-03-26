@@ -20,7 +20,7 @@ export function AdminLoginPage() {
       
       if (result.success) {
         toast.success('Admin login successful!');
-        navigate('/admin');
+        window.location.href = '/admin';
       } else {
         toast.error(result.message || 'Invalid admin credentials');
       }
