@@ -18,6 +18,7 @@ export function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [similarLoading, setSimilarLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,6 +26,7 @@ export function ProductDetailPage() {
       const staticProd = staticProducts.find((p) => p.id === id);
       if (staticProd) {
         setProduct(staticProd);
+        setSelectedImage(staticProd.image);
         setLoading(false);
         return;
       }
@@ -34,6 +36,7 @@ export function ProductDetailPage() {
         const response = await api.get(`/products/${id}`);
         if (response.data) {
           setProduct(response.data);
+          setSelectedImage(response.data.image);
         } else {
           toast.error('Product data is empty');
         }
@@ -92,7 +95,7 @@ export function ProductDetailPage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl text-gray-800 mb-4">Product not found</h2>
-          <Button onClick={() => navigate('/')} variant="outline">
+          <Button onClick={() => navigate('/')} variant="outline" className="rounded-full px-8">
             Return to Home
           </Button>
         </div>
@@ -111,98 +114,152 @@ export function ProductDetailPage() {
     }
   };
 
-  const imageUrl = product.image;
+  // Prepare images array
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : [product.image];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-pink-600 mb-6 transition-colors"
+          className="flex items-center gap-2 text-gray-500 hover:text-pink-600 mb-6 transition-colors text-sm font-medium group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          Back to Collection
         </button>
 
-        {/* Product Details */}
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-16">
-          {/* Product Image */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-md">
-            <div className="aspect-square bg-pink-50">
-              <ImageWithFallback
-                src={imageUrl}
-                alt={product.title || product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Product Info */}
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-serif text-gray-800 mb-3">
-              {product.title || product.name}
-            </h1>
+        {/* Product Layout Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 mb-20">
+          
+          {/* LEFT: Image Section (Thumbnails + Main Image) */}
+          <div className="md:col-span-7 lg:col-span-7 flex flex-col md:flex-row gap-4">
             
-            <div className="flex gap-2 mb-4">
-              <span className="px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold">
-                {product.type}
-              </span>
-            </div>
+            {/* Desktop Thumbnails (Vertical) */}
+            {images.length > 1 && (
+              <div className="hidden md:flex flex-col gap-3 w-20 shrink-0">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${
+                      selectedImage === img 
+                        ? 'border-pink-500 shadow-md scale-105' 
+                        : 'border-pink-50 hover:border-pink-200'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
 
-            <p className="text-3xl font-semibold text-pink-600 mb-6">₹{Number(product.price).toFixed(2)}</p>
-
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {product.description}
-            </p>
-
-            <div className="mb-6">
-              <p className="text-sm text-gray-500 mb-2">
-                {(product.inventory || product.stock) > 10 ? 'In Stock' : `Only ${product.inventory || product.stock} left in stock`}
-              </p>
-            </div>
-
-            {/* Quantity Selector */}
-            <div className="mb-6">
-              <label className="block text-sm text-gray-700 mb-2">Quantity</label>
-              <div className="items-center gap-3 inline-flex bg-white px-3 py-1.5 rounded-full border border-pink-100">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="rounded-full h-8 w-8 text-pink-600 hover:bg-pink-50"
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                <span className="text-lg w-8 text-center font-medium">{quantity}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setQuantity(Math.min(product.inventory || product.stock, quantity + 1))}
-                  className="rounded-full h-8 w-8 text-pink-600 hover:bg-pink-50"
-                  disabled={quantity >= (product.inventory || product.stock)}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+            {/* Main Image View */}
+            <div className="flex-1 bg-pink-50/30 rounded-3xl overflow-hidden border border-pink-50 relative group shadow-sm">
+              <div className="aspect-[4/5] sm:aspect-square md:aspect-[4/5] lg:aspect-square">
+                <ImageWithFallback
+                  src={selectedImage || product.image}
+                  alt={product.title || product.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                onClick={handleAddToCart}
-                variant="outline"
-                className="flex-1 rounded-full border-pink-300 text-pink-600 hover:bg-pink-50 h-12 text-base font-medium"
-              >
-                Add to Cart
-              </Button>
-              <Button
-                onClick={handleBuyNow}
-                className="flex-1 rounded-full bg-pink-600 hover:bg-pink-700 text-white h-12 text-base font-medium shadow-md transition-all active:scale-95"
-              >
-                Buy Now
-              </Button>
+            {/* Mobile Thumbnails (Horizontal) */}
+            {images.length > 1 && (
+              <div className="flex md:hidden gap-3 overflow-x-auto pb-2 scrollbar-hide mt-2">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`h-16 w-16 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
+                      selectedImage === img 
+                        ? 'border-pink-500 scale-105 shadow-md' 
+                        : 'border-pink-100'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT: Product Details Info */}
+          <div className="md:col-span-5 lg:col-span-5 flex flex-col pt-4 md:pt-0">
+            <div className="mb-6">
+              <span className="inline-block px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
+                {product.type}
+              </span>
+              <h1 className="text-3xl lg:text-4xl font-serif text-gray-900 leading-tight mb-2">
+                {product.title || product.name}
+              </h1>
+              <div className="flex items-center gap-4 py-4">
+                <span className="text-3xl font-bold text-pink-600">₹{Number(product.price).toFixed(2)}</span>
+                <span className="text-sm text-gray-400 line-through">₹{(Number(product.price) * 1.25).toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-6 mb-8 text-gray-600 text-sm sm:text-base leading-relaxed">
+              <p>{product.description}</p>
+              
+              <div className="flex items-center gap-2 text-xs">
+                <div className={`w-2 h-2 rounded-full ${(product.inventory || product.stock) > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+                <span>
+                  {(product.inventory || product.stock) > 10 
+                    ? 'Available in Stock' 
+                    : (product.inventory || product.stock) > 0 
+                      ? `Hurry! Only ${product.inventory || product.stock} pieces remaining`
+                      : 'Recently Sold Out'}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-8 mt-auto">
+              {/* Quantity Selection */}
+              <div>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">Quantity Selection</span>
+                <div className="inline-flex items-center p-1 bg-gray-50 rounded-2xl border border-gray-100">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="h-10 w-10 rounded-xl text-gray-500 hover:bg-white hover:text-pink-600 transition-all shadow-none"
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <span className="w-12 text-center font-semibold text-gray-800">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(Math.min(product.inventory || product.stock, quantity + 1))}
+                    className="h-10 w-10 rounded-xl text-gray-500 hover:bg-white hover:text-pink-600 transition-all shadow-none"
+                    disabled={quantity >= (product.inventory || product.stock)}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Action Buttons Section */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={handleAddToCart}
+                  variant="outline"
+                  className="flex-1 h-16 rounded-2xl border-2 border-pink-100 text-pink-600 font-bold text-lg hover:bg-pink-50 hover:border-pink-200"
+                >
+                  Add to Cart
+                </Button>
+                <Button
+                  onClick={handleBuyNow}
+                  className="flex-1 h-16 rounded-2xl bg-pink-600 font-bold text-lg hover:bg-pink-700 text-white shadow-lg shadow-pink-100 transition-all active:scale-95"
+                >
+                  Buy Now
+                </Button>
+              </div>
             </div>
           </div>
         </div>
