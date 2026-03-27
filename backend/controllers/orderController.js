@@ -68,7 +68,13 @@ exports.createOrder = async (req, res) => {
 
     console.log('Initializing Razorpay order with options:', JSON.stringify(options));
     const razorpayOrder = await razorpay.orders.create(options);
-    console.log('Razorpay order created:', razorpayOrder.id);
+    
+    if (!razorpayOrder || !razorpayOrder.id) {
+      console.error('Razorpay order creation returned invalid response:', razorpayOrder);
+      throw new Error('Failed to create Razorpay order');
+    }
+    
+    console.log('Razorpay order created successfully:', razorpayOrder.id);
 
     const order = new Order({
       user: req.user._id,
@@ -80,6 +86,7 @@ exports.createOrder = async (req, res) => {
     });
 
     const createdOrder = await order.save();
+    console.log('Order saved to database:', createdOrder._id);
 
     res.status(201).json({
       orderId: createdOrder._id,
@@ -88,12 +95,15 @@ exports.createOrder = async (req, res) => {
       currency: options.currency
     });
   } catch (error) {
-    console.error('Detailed Error creating order:', error);
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message,
+    console.error('CRITICAL ERROR in createOrder:', {
+      message: error.message,
       stack: error.stack,
-      fullError: error
+      razorpayError: error.payment_id ? error : 'N/A' // Razorpay errors sometimes have unique fields
+    });
+    
+    res.status(500).json({ 
+      message: 'Failed to initialize payment. Please try again.', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -116,9 +126,11 @@ exports.verifyPayment = async (req, res) => {
       .digest('hex');
 
     if (razorpay_signature === expectedSign) {
-      // Payment verified
+      console.log('Payment verified successfully for order:', razorpay_order_id);
+      
       const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
       if (!order) {
+        console.error('Order NOT found in DB for razorpay_order_id:', razorpay_order_id);
         return res.status(404).json({ message: 'Order not found' });
       }
 
@@ -126,24 +138,33 @@ exports.verifyPayment = async (req, res) => {
       order.razorpayPaymentId = razorpay_payment_id;
       order.razorpaySignature = razorpay_signature;
       await order.save();
+      console.log('Order status updated to completed:', order._id);
 
-      // Update product inventory (handling both fields)
+      // Update product inventory
       for (const item of order.items) {
         const product = await Product.findById(item.product);
         if (product) {
+          const oldStock = product.inventory !== undefined ? product.inventory : product.stock;
           if (product.inventory !== undefined) product.inventory -= item.quantity;
           if (product.stock !== undefined) product.stock -= item.quantity;
           await product.save();
+          console.log(`Updated inventory for ${product.title || product.name}: ${oldStock} -> ${oldStock - item.quantity}`);
         }
       }
 
       res.status(200).json({ message: 'Payment verified successfully', order });
     } else {
-      res.status(400).json({ message: 'Invalid signature' });
+      console.error('INVALID SIGNATURE in verifyPayment:', {
+        orderId: razorpay_order_id,
+        paymentId: razorpay_payment_id,
+        receivedSignature: razorpay_signature,
+        expectedSignature: expectedSign
+      });
+      res.status(400).json({ message: 'Invalid payment signature' });
     }
   } catch (error) {
-    console.error('Error verifying payment:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('CRITICAL ERROR in verifyPayment:', error);
+    res.status(500).json({ message: 'Failed to verify payment', error: error.message });
   }
 };
 

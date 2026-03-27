@@ -67,16 +67,21 @@ export function CheckoutPage() {
     }
 
     setLoading(true);
-
     try {
-      // 0. Get Razorpay Key from backend
+      // 0. Load Razorpay script
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) {
+        throw new Error('Failed to load Razorpay SDK. Please check your internet connection.');
+      }
+
+      // 1. Get Razorpay Key from backend
       const configRes = await api.get('/orders/config/razorpay-key');
       const { keyId } = configRes.data;
       
       console.log('Razorpay Key fetched:', keyId);
 
       if (!keyId || keyId === 'YOUR_RAZORPAY_KEY_ID') {
-        throw new Error('Razorpay Key ID is not configured on the server');
+        throw new Error('Razorpay is currently not configured for payments. Please contact support.');
       }
 
       // 1. Create Order on Backend
