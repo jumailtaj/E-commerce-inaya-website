@@ -3,12 +3,11 @@ const Product = require('../models/product');
 // Get all products
 const getProducts = async (req, res) => {
   try {
-    const { page = 1, limit = 20, category, subcategory, search } = req.query;
+    const { page = 1, limit = 20, type, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     let query = {};
-    if (category) query.category = category;
-    if (subcategory) query.subcategory = subcategory;
+    if (type) query.type = type;
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -43,7 +42,7 @@ const path = require('path');
 
 // Create a new product
 const createProduct = async (req, res) => {
-  const { title, description, price, inventory, category, subcategory } = req.body;
+  const { title, description, price, inventory, type } = req.body;
   let image = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080';
 
   try {
@@ -62,8 +61,7 @@ const createProduct = async (req, res) => {
       price: Number(price),
       inventory: Number(inventory),
       image,
-      category,
-      subcategory,
+      type,
     });
 
     const newProduct = await product.save();
@@ -77,14 +75,13 @@ const createProduct = async (req, res) => {
 // Update a product
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { title, description, price, inventory, category, subcategory } = req.body;
+  const { title, description, price, inventory, type } = req.body;
   let updateData = { 
     title, 
     description, 
     price: Number(price), 
     inventory: Number(inventory),
-    category,
-    subcategory
+    type
   };
 
   try {

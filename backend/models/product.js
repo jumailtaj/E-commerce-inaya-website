@@ -23,13 +23,18 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  category: {
+  type: {
     type: String,
     required: true,
-  },
-  subcategory: {
-    type: String,
-    required: true,
+    enum: [
+      'Hair pin',
+      'Banana clips',
+      'Clutches',
+      'Clips',
+      'Hair band',
+      'Party wear',
+      'Centre clip'
+    ]
   },
   createdAt: {
     type: Date,
@@ -37,8 +42,9 @@ const productSchema = new mongoose.Schema({
   },
 });
 
-productSchema.index({ title: 'text', name: 'text', category: 'text', subcategory: 'text' });
+productSchema.index({ title: 'text', name: 'text', type: 'text' });
 productSchema.index({ title: 1, name: 1 });
 productSchema.index({ createdAt: -1 });
+productSchema.index({ type: 1 });
 
 module.exports = mongoose.model('Product', productSchema);

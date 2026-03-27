@@ -11,16 +11,25 @@ export function HomePage() {
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Clips', 'Barrettes', 'Pins'];
+  const [selectedType, setSelectedType] = useState('All');
+  const types = [
+    'All',
+    'Hair pin',
+    'Banana clips',
+    'Clutches',
+    'Clips',
+    'Hair band',
+    'Party wear',
+    'Centre clip'
+  ];
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
         const params = {};
-        if (selectedCategory !== 'All') {
-          params.category = selectedCategory;
+        if (selectedType !== 'All') {
+          params.type = selectedType;
         }
         if (search) {
           params.search = search;
@@ -30,7 +39,7 @@ export function HomePage() {
         
         if (productsList && productsList.length > 0) {
           setProducts(productsList);
-        } else if (!params.search && selectedCategory === 'All') {
+        } else if (!params.search && selectedType === 'All') {
           // Only fallback to static if not searching/filtering and no live products
           setProducts(staticProducts);
         } else {
@@ -44,7 +53,7 @@ export function HomePage() {
       }
     };
     fetchProducts();
-  }, [selectedCategory, search]);
+  }, [selectedType, search]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
@@ -54,17 +63,17 @@ export function HomePage() {
           <h2 className="text-2xl font-serif text-gray-800">Our Products</h2>
           
           <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+            {types.map((type) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                key={type}
+                onClick={() => setSelectedType(type)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  selectedCategory === cat
+                  selectedType === type
                     ? 'bg-pink-600 text-white shadow-md'
                     : 'bg-white text-gray-600 hover:bg-pink-50 border border-pink-100'
                 }`}
               >
-                {cat}
+                {type}
               </button>
             ))}
           </div>

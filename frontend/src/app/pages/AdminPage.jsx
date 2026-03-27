@@ -5,6 +5,13 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Upload, Pencil, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../api/axios';
@@ -21,8 +28,7 @@ export function AdminPage() {
     description: '',
     price: '',
     stock: '',
-    category: '',
-    subcategory: '',
+    type: '',
     image: null
   });
   const [preview, setPreview] = React.useState(null);
@@ -76,8 +82,7 @@ export function AdminPage() {
     data.append('description', formData.description);
     data.append('price', formData.price);
     data.append('inventory', formData.stock);
-    data.append('category', formData.category);
-    data.append('subcategory', formData.subcategory);
+    data.append('type', formData.type);
     if (formData.image) {
       data.append('image', formData.image);
     }
@@ -110,8 +115,7 @@ export function AdminPage() {
       description: '',
       price: '',
       stock: '',
-      category: '',
-      subcategory: '',
+      type: '',
       image: null
     });
     setPreview(null);
@@ -125,8 +129,7 @@ export function AdminPage() {
       description: product.description,
       price: product.price,
       stock: product.inventory,
-      category: product.category || '',
-      subcategory: product.subcategory || '',
+      type: product.type || '',
       image: null // We don't prepopulate the image file, but we can show the current one
     });
     setPreview(product.image);
@@ -247,32 +250,33 @@ export function AdminPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* Category */}
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  placeholder="e.g., Clips"
-                  required
-                  className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
-                />
-              </div>
-
-              {/* Subcategory */}
-              <div>
-                <Label htmlFor="subcategory">Subcategory</Label>
-                <Input
-                  id="subcategory"
-                  value={formData.subcategory}
-                  onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
-                  placeholder="e.g., Pearl"
-                  required
-                  className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
-                />
-              </div>
+            {/* Type Dropdown */}
+            <div>
+              <Label htmlFor="type">Type</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
+                required
+              >
+                <SelectTrigger className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white">
+                  <SelectValue placeholder="Select a type" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  {[
+                    'Hair pin',
+                    'Banana clips',
+                    'Clutches',
+                    'Clips',
+                    'Hair band',
+                    'Party wear',
+                    'Centre clip'
+                  ].map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Image Upload */}
@@ -389,8 +393,7 @@ export function AdminPage() {
                   <p className="text-pink-600 font-semibold mb-2">₹{product.price.toFixed(2)}</p>
                   <p className="text-sm text-gray-500 line-clamp-2 mb-4">{product.description}</p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="px-2 py-0.5 bg-pink-100 text-pink-600 rounded-full text-xs font-medium">{product.category}</span>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-xs font-medium">{product.subcategory}</span>
+                    <span className="px-2 py-0.5 bg-pink-100 text-pink-600 rounded-full text-xs font-medium">{product.type}</span>
                   </div>
                   <div className="mt-auto pt-4 border-t border-pink-50 flex justify-between items-center text-sm text-gray-600">
                     <span>Stock: {product.inventory}</span>

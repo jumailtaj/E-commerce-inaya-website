@@ -113,10 +113,7 @@ export function ProductDetailPage() {
             
             <div className="flex gap-2 mb-4">
               <span className="px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold">
-                {product.category}
-              </span>
-              <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">
-                {product.subcategory}
+                {product.type}
               </span>
             </div>
 

@@ -25,9 +25,9 @@ export const ProductCard = memo(function ProductCard({ product }) {
           <h3 className="text-gray-800 text-sm font-medium mb-1 truncate group-hover:text-pink-600 transition-colors">
             {product.title || product.name}
           </h3>
-          {product.category && (
+          {product.type && (
             <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">
-              {product.category}
+              {product.type}
             </p>
           )}
           <p className="text-pink-600 text-sm font-semibold">₹{product.price?.toFixed(2) || '0.00'}</p>
