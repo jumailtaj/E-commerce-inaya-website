@@ -102,8 +102,10 @@ exports.createOrder = async (req, res) => {
     });
     
     res.status(500).json({ 
-      message: 'Failed to initialize payment. Please try again.', 
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Failed to initialize payment. ' + (error.message || 'Please try again.'), 
+      error: error.message,
+      // Temporarily include full error for easier debugging by the user
+      details: error
     });
   }
 };
