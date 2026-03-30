@@ -35,6 +35,7 @@ export function Footer() {
               <li><a href="https://www.instagram.com/inayaadotcom/" className="text-gray-600 hover:text-pink-600 transition-colors">Instagram</a></li>
               <li><a href="https://www.facebook.com/profile.php?id=61576641383862" className="text-gray-600 hover:text-pink-600 transition-colors">facebook</a></li>
               <li><a href="https://www.youtube.com/@inayaafancystore" className="text-gray-600 hover:text-pink-600 transition-colors">youtube</a></li>
+              <li><a href="https://wa.me/923172171142" className="text-gray-600 hover:text-pink-600 transition-colors">whatsapp</a></li>
             </ul>
           </div>
         </div>
