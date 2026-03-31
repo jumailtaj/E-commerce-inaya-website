@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { ProductCard } from '../components/ProductCard';
 import { Hero } from '../components/Hero';
-import { Hero } from '../components/Hero';
 import api from '../../api/axios';
 
 export function HomePage() {

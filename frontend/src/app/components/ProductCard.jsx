@@ -1,12 +1,11 @@
 import { Link } from 'react-router';
 import { memo } from 'react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
 
 export const ProductCard = memo(function ProductCard({ product }) {
   let optimizedImageSrc = product.image;
   if (optimizedImageSrc && optimizedImageSrc.includes('cloudinary.com')) {
     if (!optimizedImageSrc.includes('f_auto') && !optimizedImageSrc.includes('q_auto')) {
-       optimizedImageSrc = optimizedImageSrc.replace('/upload/', '/upload/f_auto,q_auto,w_500,c_limit/');
+      optimizedImageSrc = optimizedImageSrc.replace('/upload/', '/upload/f_auto,q_auto,w_500,c_limit/');
     }
   }
 
@@ -14,11 +13,11 @@ export const ProductCard = memo(function ProductCard({ product }) {
     <Link to={`/product/${product.id || product._id}`} className="group">
       <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="aspect-square overflow-hidden bg-pink-50">
-          <ImageWithFallback
+          <img
             src={optimizedImageSrc}
             alt={product.title || product.name}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
           />
         </div>
         <div className="p-2">

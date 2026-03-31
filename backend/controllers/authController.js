@@ -76,17 +76,33 @@ const login = async (req, res) => {
     // Check for user email
     const user = await User.findOne({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+    if (user) {
+      const isHashed = user.password.startsWith('$2a$') || user.password.startsWith('$2b$');
+      let isMatch = false;
+
+      if (isHashed) {
+        isMatch = await bcrypt.compare(password, user.password);
+      } else {
+        isMatch = (password === user.password);
+        if (isMatch) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(password, salt);
+          await user.save();
+        }
+      }
+
+      if (isMatch) {
+        return res.json({
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          token: generateToken(user._id),
+        });
+      }
     }
+    
+    res.status(401).json({ message: 'Invalid credentials' });
   } catch (error) {
     console.error('Login Error:', error);
     res.status(500).json({ message: error.message });

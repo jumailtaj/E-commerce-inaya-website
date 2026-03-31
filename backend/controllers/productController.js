@@ -43,7 +43,7 @@ const path = require('path');
 // Create a new product
 const createProduct = async (req, res) => {
   const { title, description, price, inventory, type } = req.body;
-  let image = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080';
+  let image = '/placeholder.png';
 
   try {
     if (req.file) {

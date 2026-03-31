@@ -133,10 +133,10 @@ export function OrderHistoryPage() {
                       <div key={idx} className="flex gap-4 items-center">
                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-pink-50 border border-pink-50 flex-shrink-0">
                           <img
-                          src={item.image || 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080'}
+                          src={item.image || '/placeholder.png'}
                           alt={item.title}
                           className="w-16 h-16 object-cover rounded-lg border border-pink-50"
-                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }}
+                          onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
                         />
                         </div>
                         <div className="flex-1">

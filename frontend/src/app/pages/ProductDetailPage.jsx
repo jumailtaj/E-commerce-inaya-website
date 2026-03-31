@@ -138,7 +138,7 @@ export function ProductDetailPage() {
                         : 'border-gray-100 hover:border-pink-200'
                     }`}
                   >
-                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }} />
+                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
                 ))}
               </div>
@@ -148,10 +148,10 @@ export function ProductDetailPage() {
             <div className="flex-1 bg-white rounded-2xl overflow-hidden border border-gray-100 relative group shadow-sm flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
               <div className="relative w-full h-full flex items-center justify-center p-4">
                 <img
-                  src={selectedImage || 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080'}
+                  src={selectedImage || '/placeholder.png'}
                   alt={product.title || product.name}
                   className="max-w-full max-h-[500px] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-[1.02]"
-                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
                 />
               </div>
             </div>
@@ -169,7 +169,7 @@ export function ProductDetailPage() {
                         : 'border-gray-100'
                     }`}
                   >
-                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }} />
+                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
                 ))}
               </div>

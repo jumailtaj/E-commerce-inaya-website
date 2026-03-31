@@ -9,7 +9,7 @@ export function CartProvider({ children }) {
       if (savedCart) {
         const parsed = JSON.parse(savedCart);
         if (Array.isArray(parsed)) {
-          return parsed.filter(item => item && item.product && item.product.id);
+          return parsed.filter(item => item && item.product && (item.product._id || item.product.id));
         }
       }
       return [];
@@ -25,10 +25,10 @@ export function CartProvider({ children }) {
 
   const addToCart = useCallback((product, quantity) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.product.id === product.id);
+      const existingItem = prevItems.find((item) => (item.product._id || item.product.id) === (product._id || product.id));
       if (existingItem) {
         return prevItems.map((item) =>
-          item.product.id === product.id
+          (item.product._id || item.product.id) === (product._id || product.id)
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -38,7 +38,7 @@ export function CartProvider({ children }) {
   }, []);
 
   const removeFromCart = useCallback((productId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.product.id !== productId));
+    setCartItems((prevItems) => prevItems.filter((item) => (item.product._id || item.product.id) !== productId));
   }, []);
 
   const updateQuantity = useCallback((productId, quantity) => {
@@ -48,7 +48,7 @@ export function CartProvider({ children }) {
     }
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        (item.product._id || item.product.id) === productId ? { ...item, quantity } : item
       )
     );
   }, [removeFromCart]);

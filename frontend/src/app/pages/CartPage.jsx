@@ -40,17 +40,17 @@ export function CartPage() {
         <div className="space-y-4 mb-8">
           {cartItems.map((item) => (
             <div
-              key={item.product.id}
+              key={item.product._id || item.product.id}
               className="bg-white rounded-2xl shadow-sm p-4 sm:p-6"
             >
               <div className="flex gap-4">
                 {/* Product Image */}
                 <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-pink-50 flex-shrink-0">
                     <img
-                      src={item.product.image || 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080'}
+                      src={item.product.image || '/placeholder.png'}
                       alt={item.product.name}
                       className="w-full h-full object-cover"
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }}
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
                     />
                 </div>
 
@@ -69,7 +69,7 @@ export function CartPage() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.product._id || item.product.id, item.quantity - 1)}
                         className="h-8 w-8 rounded-full border-pink-200 hover:bg-pink-50"
                       >
                         <Minus className="w-3 h-3" />
@@ -78,7 +78,7 @@ export function CartPage() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.product._id || item.product.id, item.quantity + 1)}
                         className="h-8 w-8 rounded-full border-pink-200 hover:bg-pink-50"
                       >
                         <Plus className="w-3 h-3" />
@@ -92,7 +92,7 @@ export function CartPage() {
                       ₹{(item.product.price * item.quantity).toFixed(2)}
                     </p>
                     <button
-                      onClick={() => removeFromCart(item.product.id)}
+                      onClick={() => removeFromCart(item.product._id || item.product.id)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                       aria-label="Remove from cart"
                     >
