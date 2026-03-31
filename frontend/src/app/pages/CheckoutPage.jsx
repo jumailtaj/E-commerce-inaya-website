@@ -10,6 +10,7 @@ import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
+import { MapPin, Check, Plus } from 'lucide-react';
 export function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,8 +42,28 @@ export function CheckoutPage() {
     if (!isAuthenticated) {
       toast.error('Please login to continue to checkout');
       navigate('/login', { state: { from: location.pathname } });
+    } else if (user?.addresses?.length > 0) {
+      const defaultAddr = user.addresses.find(a => a.isDefault) || user.addresses[0];
+      setShippingAddress({
+        street: defaultAddr.addressLine,
+        city: defaultAddr.city,
+        state: defaultAddr.state,
+        zipCode: defaultAddr.pincode,
+        country: 'India'
+      });
     }
-  }, [isAuthenticated, navigate, location.pathname]);
+  }, [isAuthenticated, navigate, location.pathname, user]);
+
+  const selectSavedAddress = (addr) => {
+    setShippingAddress({
+      street: addr.addressLine,
+      city: addr.city,
+      state: addr.state,
+      zipCode: addr.pincode,
+      country: 'India'
+    });
+    toast.info('Shipping address updated');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -167,23 +188,62 @@ export function CheckoutPage() {
           <div className="lg:col-span-2 space-y-6">
             <Card className="border-none shadow-md overflow-hidden">
               <CardHeader className="bg-white border-b border-pink-100">
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-pink-500" />
-                  Shipping Address
+                <CardTitle className="text-xl flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-pink-500" />
+                    Shipping Address
+                  </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="street">Street Address</Label>
-                  <Input
-                    id="street"
-                    name="street"
-                    placeholder="123 Main St"
-                    value={shippingAddress.street}
-                    onChange={handleInputChange}
-                    className="focus-visible:ring-pink-500"
-                  />
-                </div>
+              <CardContent className="p-6 space-y-6">
+                {user?.addresses?.length > 0 && (
+                  <div className="space-y-3 mb-6">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-gray-400">Saved Addresses</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {user.addresses.map((addr) => {
+                        const isSelected = shippingAddress.street === addr.addressLine && shippingAddress.zipCode === addr.pincode;
+                        return (
+                          <div 
+                            key={addr._id}
+                            onClick={() => selectSavedAddress(addr)}
+                            className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                              isSelected ? 'border-pink-500 bg-pink-50/50' : 'border-gray-100 hover:border-pink-200 bg-white'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-1">
+                              <p className="text-sm font-bold text-gray-900 truncate pr-6">{addr.fullName}</p>
+                              {isSelected && <Check className="w-4 h-4 text-pink-600 shrink-0" />}
+                            </div>
+                            <p className="text-xs text-gray-500 line-clamp-2">
+                              {addr.addressLine}, {addr.city}, {addr.state} - {addr.pincode}
+                            </p>
+                          </div>
+                        );
+                      })}
+                      <div 
+                        onClick={() => navigate('/profile', { state: { activeTab: 'addresses' } })}
+                        className="p-3 rounded-xl border-2 border-dashed border-pink-100 hover:border-pink-300 hover:bg-pink-50/20 cursor-pointer flex items-center justify-center gap-2 group transition-all"
+                      >
+                        <Plus className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-pink-400">New Address</span>
+                      </div>
+                    </div>
+                    <Separator className="bg-pink-50 mt-6" />
+                  </div>
+                )}
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="street">Street Address</Label>
+                    <Input
+                      id="street"
+                      name="street"
+                      placeholder="123 Main St"
+                      value={shippingAddress.street}
+                      onChange={handleInputChange}
+                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
+                    />
+                  </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
@@ -193,7 +253,7 @@ export function CheckoutPage() {
                       placeholder="Mumbai"
                       value={shippingAddress.city}
                       onChange={handleInputChange}
-                      className="focus-visible:ring-pink-500"
+                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                   <div className="space-y-2">
@@ -204,7 +264,7 @@ export function CheckoutPage() {
                       placeholder="Maharashtra"
                       value={shippingAddress.state}
                       onChange={handleInputChange}
-                      className="focus-visible:ring-pink-500"
+                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                 </div>
@@ -217,7 +277,7 @@ export function CheckoutPage() {
                       placeholder="400001"
                       value={shippingAddress.zipCode}
                       onChange={handleInputChange}
-                      className="focus-visible:ring-pink-500"
+                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                   <div className="space-y-2">
@@ -231,7 +291,8 @@ export function CheckoutPage() {
                     />
                   </div>
                 </div>
-              </CardContent>
+              </div>
+            </CardContent>
             </Card>
 
             <Card className="border-none shadow-md overflow-hidden">

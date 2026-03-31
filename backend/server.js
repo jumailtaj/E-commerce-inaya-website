@@ -49,11 +49,16 @@ app.get("/api/test", (req, res) => {
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const userRoutes = require("./routes/userRoutes");
+const { logout } = require("./controllers/userController");
+const { protect } = require("./middleware/authMiddleware");
 
 // Use Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/user", userRoutes);
+app.post("/api/auth/logout", protect, logout);
 
 // Error Handling
 app.use((err, req, res, next) => {

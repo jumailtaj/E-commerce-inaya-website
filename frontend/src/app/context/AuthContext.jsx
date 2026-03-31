@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
           return;
         }
       }
-      api.get('/auth/me')
+      api.get('/user/profile')
       .then(res => {
         if (res.data._id) {
           setUser(res.data);
@@ -79,13 +79,67 @@ export function AuthProvider({ children }) {
   };
 
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+  const updateProfile = async (profileData) => {
+    try {
+      const res = await api.put('/user/profile', profileData);
+      setUser(res.data);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Update failed' };
+    }
+  };
+
+  const addAddress = async (addressData) => {
+    try {
+      const res = await api.post('/user/addresses', addressData);
+      setUser(prev => ({ ...prev, addresses: res.data }));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Add address failed' };
+    }
+  };
+
+  const updateAddress = async (id, addressData) => {
+    try {
+      const res = await api.put(`/user/addresses/${id}`, addressData);
+      setUser(prev => ({ ...prev, addresses: res.data }));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Update address failed' };
+    }
+  };
+
+  const deleteAddress = async (id) => {
+    try {
+      const res = await api.delete(`/user/addresses/${id}`);
+      setUser(prev => ({ ...prev, addresses: res.data }));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Delete address failed' };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated: !!user, 
+      login, signup, logout, 
+      updateProfile, 
+      addAddress, updateAddress, deleteAddress,
+      loading 
+    }}>
       {!loading ? children : <div className="min-h-screen flex items-center justify-center">Loading...</div>}
     </AuthContext.Provider>
   );

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { Input } from '../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,9 +21,11 @@ export function LoginPage() {
     try {
       const result = await login(email, password);
       if (result.success) {
+        toast.success('Welcome back!');
         navigate('/');
       } else {
         setError(result.message);
+        toast.error(result.message || 'Login failed');
       }
     } finally {
       setLoading(false);

@@ -63,30 +63,31 @@ export function OrderHistoryPage() {
             <h1 className="text-3xl font-serif text-gray-800">Your Orders</h1>
             <p className="text-gray-500">Track and manage your recent purchases</p>
           </div>
-          <Badge variant="outline" className="bg-white text-pink-600 border-pink-200 px-4 py-1">
+          <Badge variant="outline" className="bg-white text-pink-600 border-pink-100 rounded-full px-4 py-1.5 shadow-sm">
             {orders.length} {orders.length === 1 ? 'Order' : 'Orders'}
           </Badge>
         </div>
 
         {orders.length === 0 ? (
-          <Card className="p-12 text-center shadow-md border-none bg-white">
-            <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-800 mb-2">No orders yet</h3>
-            <p className="text-gray-500 mb-6">Explore our beautiful collection and find something special!</p>
-            <Button onClick={() => navigate('/')} variant="outline" className="border-pink-200 text-pink-600 hover:bg-pink-50">
+          <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-pink-50">
+            <div className="bg-pink-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="w-10 h-10 text-pink-300" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">No orders yet</h3>
+            <p className="text-gray-500 mb-8 max-w-sm mx-auto">Explore our beautiful collection and find something special to elevate your style!</p>
+            <Button onClick={() => navigate('/')} className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-10 h-12 shadow-lg shadow-pink-100 transition-all">
               Start Shopping
             </Button>
-          </Card>
+          </div>
         ) : (
           <div className="space-y-6">
             {orders.map((order) => (
               <Card key={order._id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow bg-white">
-                <CardHeader className="bg-pink-50/50 flex flex-row items-center justify-between border-b border-pink-100 p-4">
-                  <div className="flex flex-wrap gap-4 items-center">
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Order Placed</p>
-                      <div className="flex items-center gap-1.5 text-sm text-gray-700">
-                        <Calendar className="w-3.5 h-3.5 text-pink-400" />
+                <CardHeader className="bg-gray-50/50 flex flex-row items-center justify-between border-b border-pink-50 p-5">
+                  <div className="flex flex-wrap gap-6 items-center">
+                    <div className="space-y-1">
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Order Placed</p>
+                      <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
                         {new Date(order.createdAt).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'long',
@@ -94,34 +95,37 @@ export function OrderHistoryPage() {
                         })}
                       </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Total Amount</p>
-                      <p className="text-sm font-semibold text-pink-600">₹{order.totalAmount.toFixed(2)}</p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Total</p>
+                      <p className="text-sm font-bold text-pink-600">₹{order.totalAmount.toFixed(2)}</p>
                     </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Ship to</p>
-                      <div className="flex items-center gap-1.5 text-sm text-gray-700">
-                        <MapPin className="w-3.5 h-3.5 text-pink-400" />
+                    <div className="space-y-1">
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Ship to</p>
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-gray-600">
                         {order.shippingAddress.city}, {order.shippingAddress.state}
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Order #</p>
-                    <p className="text-[10px] font-mono text-gray-500">{order.razorpayOrderId}</p>
+                  <div className="text-right hidden sm:block">
+                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Order ID</p>
+                    <p className="text-[10px] font-mono font-medium text-gray-400">#{order.razorpayOrderId.slice(-8)}</p>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
                   {/* Status Badges */}
-                  <div className="flex gap-2 mb-6">
-                    <Badge className={`${
-                      order.paymentStatus === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                    } border-none`}>
-                      Payment: {order.paymentStatus.toUpperCase()}
-                    </Badge>
-                    <Badge className="bg-pink-100 text-pink-700 border-none">
-                      Status: {order.orderStatus.toUpperCase()}
-                    </Badge>
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider ${
+                      order.paymentStatus === 'completed' 
+                        ? 'bg-green-50 border-green-100 text-green-600' 
+                        : 'bg-yellow-50 border-yellow-100 text-yellow-600'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${order.paymentStatus === 'completed' ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      {order.paymentStatus}
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-100 text-pink-600 text-[11px] font-bold uppercase tracking-wider">
+                      <div className="w-1.5 h-1.5 rounded-full bg-pink-500" />
+                      {order.orderStatus}
+                    </div>
                   </div>
 
                   {/* Order Items */}

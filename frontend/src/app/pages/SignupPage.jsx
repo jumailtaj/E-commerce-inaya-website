@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { Input } from '../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -35,19 +36,18 @@ export function SignupPage() {
 
     setLoading(true);
     try {
-      // Adapt to the existing signup context function
       const result = await signup(formData.name, formData.email, formData.password, formData.adminSecret);
       if (result.success) {
-        toast.success('Account created successfully!'); // Added toast
+        toast.success('Account created successfully!');
         navigate('/');
       } else {
-        setError(result.message); // Use existing error state
-        toast.error(result.message || 'Failed to create account'); // Also use toast
+        setError(result.message);
+        toast.error(result.message || 'Failed to create account');
       }
     } catch (err) {
       console.error('Signup error:', err);
-      setError(err.message || 'Failed to create account'); // Use existing error state
-      toast.error(err.response?.data?.message || 'Failed to create account'); // Also use toast
+      setError(err.message || 'Failed to create account');
+      toast.error(err.response?.data?.message || 'Failed to create account');
     } finally {
       setLoading(false);
     }
@@ -75,10 +75,11 @@ export function SignupPage() {
               </label>
               <div className="mt-1">
                 <Input
+                  name="name"
                   type="text"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={formData.name}
+                  onChange={handleChange}
                   className="w-full"
                 />
               </div>
@@ -90,10 +91,11 @@ export function SignupPage() {
               </label>
               <div className="mt-1">
                 <Input
+                  name="email"
                   type="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full"
                 />
               </div>
@@ -105,10 +107,11 @@ export function SignupPage() {
               </label>
               <div className="mt-1 relative">
                 <Input
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full pr-10"
                 />
                 <button
@@ -127,10 +130,11 @@ export function SignupPage() {
               </label>
               <div className="mt-1 relative">
                 <Input
+                  name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   className="w-full pr-10"
                 />
                 <button
