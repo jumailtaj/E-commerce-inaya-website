@@ -60,8 +60,14 @@ export function AdminPage() {
         setProducts([]); // Ensure products are cleared if data is invalid
       }
     } catch (error) {
-      console.error('Fetch products error:', error);
-      toast.error('Failed to load existing products');
+      console.error('Fetch products error detalle:', {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data,
+          url: error.config?.url
+      });
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load existing products';
+      toast.error(`Admin Sync Error: ${errorMessage}`);
       setProducts([]); // Ensure products are cleared on error
     } finally {
       setLoading(false);

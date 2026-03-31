@@ -19,7 +19,9 @@ const generateToken = (id) => {
 const signup = async (req, res) => {
   try {
     console.log("Incoming data:", req.body);
-    const { name, email, password } = req.body;
+    const name = req.body.name;
+    const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
+    const password = req.body.password;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please add all fields' });
@@ -68,7 +70,8 @@ const signup = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
+    const password = req.body.password;
 
     // Check for user email
     const user = await User.findOne({ email });

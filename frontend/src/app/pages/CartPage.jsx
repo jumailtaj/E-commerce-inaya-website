@@ -2,7 +2,6 @@ import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { toast } from 'sonner';
 
 export function CartPage() {
@@ -47,11 +46,12 @@ export function CartPage() {
               <div className="flex gap-4">
                 {/* Product Image */}
                 <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-pink-50 flex-shrink-0">
-                  <ImageWithFallback
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="w-full h-full object-cover"
-                  />
+                    <img
+                      src={item.product.image || 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080'}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }}
+                    />
                 </div>
 
                 {/* Product Info */}

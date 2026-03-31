@@ -7,7 +7,6 @@ import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 export function OrderHistoryPage() {
   const { isAuthenticated } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -133,11 +132,12 @@ export function OrderHistoryPage() {
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex gap-4 items-center">
                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-pink-50 border border-pink-50 flex-shrink-0">
-                          <ImageWithFallback
-                            src={item.product?.image}
-                            alt={item.product?.title}
-                            className="w-full h-full object-cover"
-                          />
+                          <img
+                          src={item.image || 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080'}
+                          alt={item.title}
+                          className="w-16 h-16 object-cover rounded-lg border border-pink-50"
+                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1606153372339-2147fe88c097?q=80&w=1080' }}
+                        />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-800 line-clamp-1">{item.product?.title}</h4>
