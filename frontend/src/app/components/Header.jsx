@@ -32,10 +32,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-pink-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-14 gap-3">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <h1 className="text-2xl font-serif text-pink-600">Inaya</h1>
+            <h1 className="text-xl font-serif text-pink-600">Inaya</h1>
           </Link>
 
           {/* Search Bar */}
@@ -53,7 +53,7 @@ export function Header() {
           </form>
 
           {/* Icons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <ProfileDropdown />
             <button
               onClick={() => navigate('/cart')}

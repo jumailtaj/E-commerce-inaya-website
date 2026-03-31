@@ -132,7 +132,7 @@ export function ProductDetailPage() {
         </button>
 
         {/* Product Layout - Strict 45/55 Split */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 mb-20">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-12">
           
           {/* LEFT: Image Section (45% Width on Desktop) */}
           <div className="lg:w-[45%] flex flex-col md:flex-row gap-4">
@@ -157,7 +157,7 @@ export function ProductDetailPage() {
             )}
 
             {/* Main Image View - Centered and Constrained */}
-            <div className="flex-1 bg-white rounded-3xl overflow-hidden border border-gray-100 relative group shadow-sm flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
+            <div className="flex-1 bg-white rounded-2xl overflow-hidden border border-gray-100 relative group shadow-sm flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
               <div className="relative w-full h-full flex items-center justify-center p-4">
                 <ImageWithFallback
                   src={selectedImage || product.image}
@@ -193,11 +193,11 @@ export function ProductDetailPage() {
               <span className="inline-block px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 border border-pink-100">
                 {product.type}
               </span>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4 tracking-tight">
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 tracking-tight">
                 {product.title || product.name}
               </h1>
               <div className="flex items-center gap-4 py-2">
-                <span className="text-4xl font-extrabold text-pink-600">₹{Number(product.price).toFixed(2)}</span>
+                <span className="text-3xl font-extrabold text-pink-600">₹{Number(product.price).toFixed(2)}</span>
                 <div className="flex flex-col">
                   <span className="text-sm text-gray-400 line-through">₹{(Number(product.price) * 1.25).toFixed(2)}</span>
                   <span className="text-xs text-green-600 font-semibold">25% OFF</span>
@@ -227,7 +227,7 @@ export function ProductDetailPage() {
               {/* Quantity Selection */}
               <div>
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 block">Quantity</span>
-                <div className="inline-flex items-center p-1.5 bg-gray-50 rounded-2xl border border-gray-100 transition-colors focus-within:border-pink-200">
+                <div className="inline-flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100 transition-colors focus-within:border-pink-200">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -237,7 +237,7 @@ export function ProductDetailPage() {
                   >
                     <Minus className="w-4 h-4" />
                   </Button>
-                  <span className="w-14 text-center font-bold text-gray-900 text-lg">{quantity}</span>
+                  <span className="w-12 text-center font-bold text-gray-900 text-base">{quantity}</span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -255,13 +255,13 @@ export function ProductDetailPage() {
                 <Button
                   onClick={handleAddToCart}
                   variant="outline"
-                  className="flex-1 h-14 rounded-2xl border-2 border-pink-100 text-pink-600 font-bold text-lg hover:bg-pink-50 hover:border-pink-200 transition-all"
+                  className="flex-1 h-12 rounded-xl border-2 border-pink-100 text-pink-600 font-bold text-base hover:bg-pink-50 hover:border-pink-200 transition-all"
                 >
                   Add to Cart
                 </Button>
                 <Button
                   onClick={handleBuyNow}
-                  className="flex-1 h-14 rounded-2xl bg-pink-600 font-bold text-lg hover:bg-pink-700 text-white shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="flex-1 h-12 rounded-xl bg-pink-600 font-bold text-base hover:bg-pink-700 text-white shadow-lg shadow-pink-100 transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                   Buy Now
                 </Button>
@@ -272,7 +272,7 @@ export function ProductDetailPage() {
 
         {/* Similar Products Section */}
         {(similarLoading || similarProducts.length > 0) && (
-          <div className="mt-20 border-t border-gray-50 pt-16">
+          <div className="mt-12 border-t border-gray-50 pt-10">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">More in this Type</h2>
               <div className="h-px flex-1 bg-gray-100 ml-6 hidden sm:block"></div>

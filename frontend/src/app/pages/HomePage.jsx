@@ -58,8 +58,8 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <Hero />
-      <div id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-2xl font-serif text-gray-800">Our Products</h2>
           
           <div className="flex flex-wrap gap-2">
@@ -79,12 +79,12 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm animate-pulse">
                 <div className="aspect-square bg-gray-200"></div>
-                <div className="p-3">
+                <div className="p-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                   <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                 </div>

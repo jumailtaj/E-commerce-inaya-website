@@ -3,19 +3,19 @@ import { Shield } from 'lucide-react';
 
 export function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-16">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-pink-100">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="bg-pink-100 p-3 rounded-2xl">
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-pink-100">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="bg-pink-100 p-2.5 rounded-xl">
               <Shield className="w-8 h-8 text-pink-600" />
             </div>
-            <h1 className="text-4xl font-serif text-gray-900">Privacy Policy</h1>
+            <h1 className="text-3xl font-serif text-gray-900">Privacy Policy</h1>
           </div>
 
           <div className="prose prose-pink max-w-none text-gray-600 space-y-6">
             <section>
-              <h2 className="text-2xl font-serif text-gray-800 mb-4">1. Collection of Information</h2>
+              <h2 className="text-xl font-serif text-gray-800 mb-3">1. Collection of Information</h2>
               <p>
                 We collect information from you when you register on our site, place an order, subscribe to our newsletter or fill out a form. 
                 When ordering or registering on our site, as appropriate, you may be asked to enter your: name, e-mail address, mailing address, 
@@ -24,7 +24,7 @@ export function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif text-gray-800 mb-4">2. Use of Information</h2>
+              <h2 className="text-xl font-serif text-gray-800 mb-3">2. Use of Information</h2>
               <p>Any of the information we collect from you may be used in one of the following ways:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>To personalize your experience</li>
@@ -35,7 +35,7 @@ export function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif text-gray-800 mb-4">3. Protection of Information</h2>
+              <h2 className="text-xl font-serif text-gray-800 mb-3">3. Protection of Information</h2>
               <p>
                 We implement a variety of security measures to maintain the safety of your personal information when you place an order or 
                 enter, submit, or access your personal information. We offer the use of a secure server. All supplied sensitive/credit 
@@ -46,7 +46,7 @@ export function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif text-gray-800 mb-4">4. Cookies</h2>
+              <h2 className="text-xl font-serif text-gray-800 mb-3">4. Cookies</h2>
               <p>
                 Yes, we use cookies to help us remember and process the items in your shopping cart, understand and save your preferences 
                 for future visits and keep track of advertisements.

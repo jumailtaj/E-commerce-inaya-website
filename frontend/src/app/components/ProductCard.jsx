@@ -12,7 +12,7 @@ export const ProductCard = memo(function ProductCard({ product }) {
 
   return (
     <Link to={`/product/${product.id || product._id}`} className="group">
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="aspect-square overflow-hidden bg-pink-50">
           <ImageWithFallback
             src={optimizedImageSrc}
@@ -21,7 +21,7 @@ export const ProductCard = memo(function ProductCard({ product }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
-        <div className="p-3">
+        <div className="p-2">
           <h3 className="text-gray-800 text-sm font-medium mb-1 truncate group-hover:text-pink-600 transition-colors">
             {product.title || product.name}
           </h3>
