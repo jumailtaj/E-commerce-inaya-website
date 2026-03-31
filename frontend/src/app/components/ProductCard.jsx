@@ -17,6 +17,7 @@ export const ProductCard = memo(function ProductCard({ product }) {
             src={optimizedImageSrc}
             alt={product.title || product.name}
             loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
           />
         </div>
