@@ -26,6 +26,7 @@ export function CheckoutPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Check if it's a "Buy Now" flow or cart flow
   const buyNowItem = location.state?.product ? {
@@ -88,6 +89,7 @@ export function CheckoutPage() {
     }
 
     setLoading(true);
+    setIsProcessing(true);
     try {
       // 0. Load Razorpay script
       const isLoaded = await loadRazorpay();
@@ -157,8 +159,17 @@ export function CheckoutPage() {
       const rzp = new window.Razorpay(options);
       rzp.open();
       
-      rzp.on('payment.failed', function (response) {
+      rzp.on('payment.failed', async function (response) {
+        setIsProcessing(false);
+        console.error('Payment Failed Modal:', response.error);
         toast.error('Payment Failed: ' + response.error.description);
+        
+        // Optionally notify backend about failure
+        try {
+          await api.post(`/orders/${orderData.orderId}/fail`);
+        } catch (err) {
+          console.error('Failed to notify backend of payment failure:', err);
+        }
       });
 
     } catch (error) {
@@ -166,6 +177,8 @@ export function CheckoutPage() {
       toast.error(error.response?.data?.message || error.message || 'An error occurred during checkout');
     } finally {
       setLoading(false);
+      // isProcessing is kept true until redirect or failure
+      if (!window.Razorpay) setIsProcessing(false); 
     }
   };
 
@@ -358,10 +371,15 @@ export function CheckoutPage() {
               <CardFooter>
                 <Button
                   onClick={handlePayment}
-                  disabled={loading}
-                  className="w-full rounded-full bg-pink-600 hover:bg-pink-700 text-white text-lg py-6"
+                  disabled={loading || isProcessing}
+                  className="w-full rounded-full bg-pink-600 hover:bg-pink-700 text-white text-lg py-6 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Processing...' : 'Pay Now'}
+                  {isProcessing ? (
+                    <div className="flex items-center gap-2">
+                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                       Processing...
+                    </div>
+                  ) : 'Pay Now'}
                 </Button>
               </CardFooter>
             </Card>

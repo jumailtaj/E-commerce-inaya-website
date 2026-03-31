@@ -130,17 +130,18 @@ exports.verifyPayment = async (req, res) => {
     if (razorpay_signature === expectedSign) {
       console.log('Payment verified successfully for order:', razorpay_order_id);
       
-      const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
-      if (!order) {
-        console.error('Order NOT found in DB for razorpay_order_id:', razorpay_order_id);
-        return res.status(404).json({ message: 'Order not found' });
+      // IDEMPOTENCY CHECK: Check if this payment_id has already been processed
+      const existingPayment = await Order.findOne({ razorpayPaymentId: razorpay_payment_id });
+      if (existingPayment) {
+        console.warn('Idempotency alert: payment_id already processed:', razorpay_payment_id);
+        return res.status(200).json({ message: 'Payment already processed', order: existingPayment });
       }
 
-      order.paymentStatus = 'completed';
+      order.paymentStatus = 'paid';
       order.razorpayPaymentId = razorpay_payment_id;
       order.razorpaySignature = razorpay_signature;
       await order.save();
-      console.log('Order status updated to completed:', order._id);
+      console.log(`SECURE LOG: Order marked as PAID. OrderID: ${order._id}, RazorpayOrderID: ${razorpay_order_id}, PaymentID: ${razorpay_payment_id}`);
 
       // Update product inventory
       for (const item of order.items) {
@@ -204,6 +205,94 @@ exports.getOrderById = async (req, res) => {
     }
     
     res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+// @desc    Handle Razorpay Webhooks
+// @route   POST /api/orders/webhook
+// @access  Public
+exports.handleWebhook = async (req, res) => {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const signature = req.headers['x-razorpay-signature'];
+
+  try {
+    const shasum = crypto.createHmac('sha256', secret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest('hex');
+
+    if (signature === digest) {
+      const event = req.body.event;
+      console.log('WEBHOOK RECEIVED:', event);
+
+      if (event === 'payment.captured') {
+        const payload = req.body.payload.payment.entity;
+        const orderId = payload.order_id;
+        const paymentId = payload.id;
+
+        // Find the order
+        const order = await Order.findOne({ razorpayOrderId: orderId });
+        if (order && order.paymentStatus === 'pending') {
+          console.log(`WEBHOOK LOG: Updating order ${order._id} to PAID via webhook`);
+          
+          // IDEMPOTENCY CHECK
+          const existingPayment = await Order.findOne({ razorpayPaymentId: paymentId });
+          if (existingPayment) {
+             return res.status(200).json({ status: 'ok' });
+          }
+
+          order.paymentStatus = 'paid';
+          order.razorpayPaymentId = paymentId;
+          await order.save();
+
+          // Update product inventory
+          for (const item of order.items) {
+            const product = await Product.findById(item.product);
+            if (product) {
+              if (product.inventory !== undefined) product.inventory -= item.quantity;
+              if (product.stock !== undefined) product.stock -= item.quantity;
+              await product.save();
+            }
+          }
+        }
+      } else if (event === 'payment.failed') {
+        const payload = req.body.payload.payment.entity;
+        const orderId = payload.order_id;
+        
+        const order = await Order.findOne({ razorpayOrderId: orderId });
+        if (order && order.paymentStatus === 'pending') {
+          order.paymentStatus = 'failed';
+          await order.save();
+          console.log(`WEBHOOK LOG: Marked order ${order._id} as FAILED via webhook`);
+        }
+      }
+
+      res.status(200).json({ status: 'ok' });
+    } else {
+      console.error('WEBHOOK ERROR: Invalid signature');
+      res.status(400).json({ message: 'Invalid signature' });
+    }
+  } catch (error) {
+    console.error('WEBHOOK CRITICAL ERROR:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// @desc    Mark order as failed
+// @route   POST /api/orders/:id/fail
+// @access  Private
+exports.failOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    
+    // Only fail if still pending
+    if (order.paymentStatus === 'pending') {
+      order.paymentStatus = 'failed';
+      await order.save();
+    }
+    
+    res.json({ message: 'Order marked as failed' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
