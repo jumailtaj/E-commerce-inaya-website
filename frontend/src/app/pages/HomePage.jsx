@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { ProductCard } from '../components/ProductCard';
 import { Hero } from '../components/Hero';
-import { products as staticProducts } from '../data/products';
+import { Hero } from '../components/Hero';
 import api from '../../api/axios';
 
 export function HomePage() {
@@ -39,15 +39,12 @@ export function HomePage() {
         
         if (productsList && productsList.length > 0) {
           setProducts(productsList);
-        } else if (!params.search && selectedType === 'All') {
-          // Only fallback to static if not searching/filtering and no live products
-          setProducts(staticProducts);
         } else {
           setProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        setProducts(staticProducts);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -90,10 +87,14 @@ export function HomePage() {
                 </div>
               </div>
             ))
-          ) : (
+          ) : products.length > 0 ? (
             products.map((product) => (
               <ProductCard key={product.id || product._id} product={product} />
             ))
+          ) : (
+            <div className="col-span-full py-20 text-center bg-white rounded-3xl border-2 border-dashed border-pink-100">
+               <p className="text-gray-400 italic">No products found matching your selection.</p>
+            </div>
           )}
         </div>
       </div>

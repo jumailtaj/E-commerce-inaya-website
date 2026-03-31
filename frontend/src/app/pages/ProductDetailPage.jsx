@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { products as staticProducts } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Minus, Plus, ArrowLeft } from 'lucide-react';
@@ -22,16 +21,7 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      // First check static products
-      const staticProd = staticProducts.find((p) => p.id === id);
-      if (staticProd) {
-        setProduct(staticProd);
-        setSelectedImage(staticProd.image);
-        setLoading(false);
-        return;
-      }
-
-      // If not found, fetch from API
+      setLoading(true);
       try {
         const response = await api.get(`/products/${id}`);
         if (response.data) {
@@ -42,8 +32,7 @@ export function ProductDetailPage() {
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        const message = error.response?.data?.message || 'Failed to fetch product details';
-        toast.error(message);
+        toast.error(error.response?.data?.message || 'Failed to fetch product details');
       } finally {
         setLoading(false);
       }
