@@ -36,8 +36,9 @@ const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
-    const role = (req.body.adminSecret === process.env.ADMIN_SECRET) ? 'admin' : 'user';
+    // Create user with role based on secret key
+    const role = (process.env.ADMIN_SECRET && req.body.adminSecret === process.env.ADMIN_SECRET) ? 'admin' : 'user';
+    console.log(`User ${email} registering with role: ${role}`);
 
     const user = await User.create({
       name,
