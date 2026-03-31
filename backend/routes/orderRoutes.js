@@ -5,7 +5,8 @@ const {
   verifyPayment,
   getMyOrders,
   getOrderById,
-  handleWebhook
+  handleWebhook,
+  failOrder
 } = require('../controllers/orderController');
 const { protect } = require('../middleware/authMiddleware');
 
