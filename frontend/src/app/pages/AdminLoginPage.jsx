@@ -16,7 +16,10 @@ export function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await login(email, password);
+      const result = await login(
+        email.trim().toLowerCase(),
+        password.trim()
+      );
       
       if (result.success) {
         toast.success('Admin login successful!');

@@ -11,7 +11,7 @@ const protect = async (req, res, next) => {
 
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_fallback_secret_key_here');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "inaya_jwt_fallback_secret_2024");
 
       // Get user from the token
       req.user = await User.findById(decoded.id).select('-password');

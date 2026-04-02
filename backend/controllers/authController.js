@@ -4,11 +4,8 @@ const User = require('../models/user');
 
 // Generate JWT
 const generateToken = (id) => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    console.error("CRITICAL WARNING: process.env.JWT_SECRET is undefined in Railway! Using temporary fallback to prevent 500 error.");
-  }
-  return jwt.sign({ id }, secret || "temporary_fallback_secret_12345", {
+  const SECRET = process.env.JWT_SECRET || "inaya_jwt_fallback_secret_2024";
+  return jwt.sign({ id }, SECRET, {
     expiresIn: '30d',
   });
 };
@@ -71,37 +68,43 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
-    const password = req.body.password;
+    const password = req.body.password ? req.body.password.trim() : '';
 
     // Check for user email
     const user = await User.findOne({ email });
 
+    let isMatch = false;
     if (user) {
       const isHashed = user.password.startsWith('$2a$') || user.password.startsWith('$2b$');
-      let isMatch = false;
 
       if (isHashed) {
         isMatch = await bcrypt.compare(password, user.password);
       } else {
-        isMatch = (password === user.password);
+        isMatch = password === user.password;
         if (isMatch) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(password, salt);
           await user.save();
         }
       }
-
-      if (isMatch) {
-        return res.json({
-          _id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id),
-        });
-      }
     }
-    
+
+    console.log("[LOGIN ATTEMPT]", email);
+    console.log("[PASSWORD LENGTH]", password.length);
+    console.log("[USER FOUND]", !!user);
+    console.log("[PASSWORD MATCH]", isMatch);
+    console.log("[ROLE]", user?.role);
+
+    if (user && isMatch) {
+      return res.json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+      });
+    }
+
     res.status(401).json({ message: 'Invalid credentials' });
   } catch (error) {
     console.error('Login Error:', error);
