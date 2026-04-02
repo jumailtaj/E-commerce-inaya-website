@@ -12,18 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Upload, Pencil, Trash2, Plus } from 'lucide-react';
+import { Upload, Pencil, Trash2, Plus, LayoutDashboard, ShoppingBag, Package, TrendingUp, CheckCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../api/axios';
 
 export function AdminPage() {
   const { user, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [editingId, setEditingId] = React.useState(null);
-  const [formData, setFormData] = React.useState({
+  const [activeTab, setActiveTab] = useState('products');
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
@@ -31,52 +33,59 @@ export function AdminPage() {
     type: '',
     image: null
   });
-  const [preview, setPreview] = React.useState(null);
+  const [preview, setPreview] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) {
       toast.error('Admin access required');
       navigate('/admin/login');
     }
   }, [user, authLoading, navigate]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user && user.role === 'admin') {
-      fetchProducts();
+      if (activeTab === 'products') fetchProducts();
+      if (activeTab === 'orders') fetchOrders();
     }
-  }, [user]);
+  }, [user, activeTab]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const response = await api.get('/products');
-      // The backend returns { products: [], total: 0, ... }
-      const productsList = response.data.products || (Array.isArray(response.data) ? response.data : null);
-      if (Array.isArray(productsList)) {
-        setProducts(productsList);
-      } else {
-        console.error('Invalid products data format:', response.data);
-        toast.error('Unable to parse product list data');
-        setProducts([]); // Ensure products are cleared if data is invalid
-      }
+      const productsList = response.data.products || (Array.isArray(response.data) ? response.data : []);
+      setProducts(productsList);
     } catch (error) {
-      console.error('Fetch products error detalle:', {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data,
-          url: error.config?.url
-      });
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to load existing products';
-      toast.error(`Admin Sync Error: ${errorMessage}`);
-      setProducts([]); // Ensure products are cleared on error
+      toast.error('Failed to load products');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/admin/orders');
+      setOrders(response.data.orders || []);
+    } catch (error) {
+      toast.error('Failed to load orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      await api.put(`/admin/orders/${orderId}/status`, { status: newStatus });
+      toast.success(`Order set to ${newStatus}`);
+      fetchOrders(); // Refresh list
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Update failed');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!editingId && !formData.image) {
       toast.error('Please select an image');
       return;
@@ -89,41 +98,23 @@ export function AdminPage() {
     data.append('price', formData.price);
     data.append('inventory', formData.stock);
     data.append('type', formData.type);
-    if (formData.image) {
-      data.append('image', formData.image);
-    }
+    if (formData.image) data.append('image', formData.image);
 
     try {
-      const response = editingId 
-        ? await api.put(`/products/${editingId}`, data)
-        : await api.post('/products', data);
-      
-      toast.success(editingId ? 'Product updated successfully!' : 'Product added successfully!');
+      if (editingId) await api.put(`/products/${editingId}`, data);
+      else await api.post('/products', data);
+      toast.success(editingId ? 'Product updated' : 'Product added');
       resetForm();
       fetchProducts();
     } catch (error) {
-      console.error('Error processing product:', error);
-      // Detailed error reporting
-      const status = error.response?.status;
-      const serverMessage = error.response?.data?.message;
-      const axiosMessage = error.message;
-      
-      const diagnosticMessage = serverMessage || axiosMessage || `Unexpected Error (Status: ${status || 'N/A'})`;
-      toast.error(diagnosticMessage);
+      toast.error(error.response?.data?.message || 'Save failed');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      price: '',
-      stock: '',
-      type: '',
-      image: null
-    });
+    setFormData({ title: '', description: '', price: '', stock: '', type: '', image: null });
     setPreview(null);
     setEditingId(null);
   };
@@ -135,286 +126,299 @@ export function AdminPage() {
       description: product.description,
       price: product.price,
       stock: product.inventory,
-      type: product.type || '',
-      image: null // We don't prepopulate the image file, but we can show the current one
+      type: product.category || product.type || '',
+      image: null
     });
     setPreview(product.image);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-
+    if (!window.confirm('Delete this product?')) return;
     try {
       await api.delete(`/products/${id}`);
-      toast.success('Product deleted successfully');
+      toast.success('Deleted');
       fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete product');
+      toast.error('Delete failed');
     }
   };
-
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({ ...formData, image: file });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
+      reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
-  if (authLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Verifying admin session...</div>;
-  }
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'delivered': return 'bg-green-100 text-green-700 border-green-200';
+      case 'shipped': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'cancelled': return 'bg-red-100 text-red-700 border-red-200';
+      case 'processing': return 'bg-purple-100 text-purple-700 border-purple-200';
+      default: return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    }
+  };
 
-  if (!user || user.role !== 'admin') {
-    return null; // Will be handled by the useEffect redirection
-  }
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center">Verifying admin...</div>;
+  if (!user || user.role !== 'admin') return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex justify-between items-center">
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar Navigation */}
+      <div className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full shadow-sm z-10">
+        <div className="p-6">
+          <h1 className="text-2xl font-serif text-pink-600 font-bold">Inaya Store</h1>
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">Management Suite</p>
+        </div>
+        
+        <nav className="flex-1 px-4 space-y-1">
+          <button 
+            onClick={() => setActiveTab('products')}
+            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'products' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            <Package className="w-5 h-5 mr-3" />
+            Product Catalog
+          </button>
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'orders' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            <ShoppingBag className="w-5 h-5 mr-3" />
+            Orders Management
+          </button>
+        </nav>
+
+        <div className="p-4 border-t border-gray-100">
+          <div className="flex items-center p-3 rounded-xl bg-gray-50">
+            <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs">
+              {user.name?.[0] || 'A'}
+            </div>
+            <div className="ml-3 flex-1 overflow-hidden">
+              <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+              <p className="text-xs text-gray-500 truncate">Administrator</p>
+            </div>
+            <button 
+              onClick={() => { logout(); navigate('/admin/login'); }}
+              className="text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 ml-64 p-8">
+        <header className="mb-10 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-serif text-gray-800 mb-2">Admin Dashboard</h1>
-            <p className="text-gray-600">
-              {editingId ? 'Edit existing product' : 'Add new products to your store'}
-            </p>
+            <h2 className="text-3xl font-serif text-gray-900 capitalize font-medium">{activeTab} Panel</h2>
+            <p className="text-gray-500 mt-1">Manage your store operations and real-time data.</p>
           </div>
-          {editingId && (
-            <Button 
-              onClick={resetForm}
-              variant="outline"
-              className="rounded-full border-pink-300 text-pink-600 hover:bg-pink-50"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Instead
-            </Button>
-          )}
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
-          <div className="space-y-6">
-            {/* Product Title */}
-            <div>
-              <Label htmlFor="title">Product Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="e.g., Elegant Pearl Hair Clip"
-                required
-                className="mt-1 rounded-lg border-gray-400 focus:border-pink-300 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
-              />
+          <div className="flex gap-4">
+            <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
+              <TrendingUp className="w-5 h-5 text-green-500" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Live Status</p>
+                <p className="text-sm font-bold text-gray-900">System Online</p>
+              </div>
             </div>
+          </div>
+        </header>
 
-            {/* Description */}
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Describe the product features, materials, and style..."
-                rows={4}
-                required
-                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* Price */}
-            <div>
-              <Label htmlFor="price">Price (₹)</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="24.99"
-                required
-                className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* Stock Quantity */}
-            <div>
-              <Label htmlFor="stock">Stock Quantity</Label>
-              <Input
-                id="stock"
-                type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                placeholder="50"
-                required
-                className="mt-1 rounded-lg border-gray-300 focus:border-pink-300 focus:ring-pink-200 text-gray-900"
-              />
-            </div>
-
-            {/* Type Dropdown */}
-            <div>
-              <Label htmlFor="type">Type</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => setFormData({ ...formData, type: value })}
-                required
-              >
-                <SelectTrigger className="mt-1 rounded-lg border-gray-400 focus:border-pink-400 focus:ring-pink-200 text-gray-900 bg-white">
-                  <SelectValue placeholder="Select a type" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  {[
-                    'Hair pin',
-                    'Banana clips',
-                    'Clutches',
-                    'Clips',
-                    'Hair band',
-                    'Party wear',
-                    'Centre clip'
-                  ].map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Image Upload */}
-            <div>
-              <Label htmlFor="image">Product Image</Label>
-              <div className="mt-1">
-                <label
-                  htmlFor="image"
-                  className="flex flex-col items-center justify-center w-full min-h-40 border-2 border-dashed border-pink-200 rounded-lg cursor-pointer bg-pink-50 hover:bg-pink-100 transition-colors overflow-hidden"
-                >
-                  {preview ? (
-                    <img src={preview} alt="Preview" className="w-full h-40 object-contain" />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
-                      <Upload className="w-10 h-10 text-pink-400 mb-3" />
-                      <p className="mb-2 text-sm text-gray-600">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500">PNG, JPG or WEBP (MAX. 2MB)</p>
-                    </div>
+        {activeTab === 'products' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Add/Edit Form */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-bold text-gray-900">{editingId ? 'Edit Product' : 'Add New Item'}</h3>
+                  {editingId && (
+                    <button onClick={resetForm} className="text-xs text-pink-600 font-bold flex items-center">
+                      <Plus className="w-3 h-3 mr-1" /> Create Brand New
+                    </button>
                   )}
-                  <input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-                {formData.image && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    Selected: {formData.image.name}
-                  </p>
-                )}
+                </div>
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Title</Label>
+                    <Input 
+                      value={formData.title} 
+                      onChange={(e) => setFormData({...formData, title: e.target.value})} 
+                      required 
+                      className="rounded-xl border-gray-200 focus:ring-pink-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Description</Label>
+                    <Textarea 
+                      value={formData.description} 
+                      onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                      required 
+                      className="rounded-xl border-gray-200 focus:ring-pink-200 min-h-[100px]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Price (₹)</Label>
+                      <Input value={formData.price} type="number" onChange={(e)=>setFormData({...formData, price:e.target.value})} required className="rounded-xl border-gray-200" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Stock</Label>
+                      <Input value={formData.stock} type="number" onChange={(e)=>setFormData({...formData, stock:e.target.value})} required className="rounded-xl border-gray-200" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Category</Label>
+                    <Select value={formData.type} onValueChange={(v)=>setFormData({...formData, type:v})} required>
+                      <SelectTrigger className="rounded-xl border-gray-200"><SelectValue placeholder="Select type" /></SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {['Hair pin','Banana clips','Clutches','Clips','Hair band','Party wear','Centre clip'].map(t=>(
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Product Visual</Label>
+                    <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all overflow-hidden relative group">
+                      {preview ? (
+                        <img src={preview} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="text-center p-4">
+                          <Upload className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Upload Image</p>
+                        </div>
+                      )}
+                      <input type="file" onChange={handleImageChange} className="hidden" />
+                      {preview && <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Pencil className="w-5 h-5 text-white" /></div>}
+                    </label>
+                  </div>
+                  <Button type="submit" disabled={isSubmitting} className="w-full rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold h-12">
+                    {isSubmitting ? 'Syncing...' : (editingId ? 'Update Product' : 'Add to Collection')}
+                  </Button>
+                </form>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 rounded-full bg-pink-600 hover:bg-pink-700 text-white disabled:bg-pink-300"
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    {editingId ? 'Updating...' : 'Publishing...'}
-                  </span>
+            {/* List Column */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+                  <h3 className="font-bold text-gray-900">Live Catalog</h3>
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-3 py-1 rounded-full font-bold uppercase">{products.length} Items</span>
+                </div>
+                
+                {loading ? (
+                  <div className="p-20 text-center text-pink-500 animate-pulse">Loading items...</div>
                 ) : (
-                  editingId ? 'Update Product' : 'Publish Product'
+                  <div className="divide-y divide-gray-50">
+                    {products.map((p) => (
+                      <div key={p._id} className="p-4 hover:bg-gray-50 transition-colors flex items-center group">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0">
+                          <img src={p.image} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <h4 className="text-sm font-bold text-gray-900 leading-none mb-1">{p.title}</h4>
+                          <p className="text-xs text-gray-400 font-medium">₹{p.price} • {p.category || p.type}</p>
+                        </div>
+                        <div className="text-right mr-6">
+                           <p className="text-[10px] text-gray-400 uppercase font-bold">Stock</p>
+                           <p className={`text-sm font-bold ${p.inventory < 5 ? 'text-red-500' : 'text-gray-900'}`}>{p.inventory || p.stock}</p>
+                        </div>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => handleEdit(p)} className="p-2 text-gray-400 hover:text-blue-600 transition-colors"><Pencil className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(p._id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={resetForm}
-                disabled={isSubmitting}
-                className="flex-1 rounded-full border-pink-300 text-pink-600 hover:bg-pink-50"
-              >
-                Reset Form
-              </Button>
-            </div>
-          </div>
-        </form>
-
-        {/* Product List */}
-        <div className="mt-12 border-t border-pink-100 pt-10">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-serif text-gray-800">Existing Products</h2>
-            <Button 
-              onClick={() => { logout(); navigate('/admin/login'); }} 
-              variant="outline" 
-              className="text-gray-500 hover:text-red-500 rounded-full border-gray-200"
-            >
-              Sign out Admin
-            </Button>
-          </div>
-          
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-pink-500 gap-4">
-              <div className="w-10 h-10 border-4 border-pink-200 border-t-pink-600 rounded-full animate-spin"></div>
-              <p className="italic font-medium">Fetching your collection...</p>
-            </div>
-          ) : Array.isArray(products) && products.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2">
-              {products.map((product) => (
-              <div key={product._id} className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col group">
-                <div className="aspect-square relative overflow-hidden bg-pink-50 h-48">
-                  <img 
-                    src={product.image} 
-                    alt={product.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <button 
-                      onClick={() => handleEdit(product)}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-blue-600 hover:bg-white shadow-sm transition-colors"
-                      title="Edit Product"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(product._id)}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-red-600 hover:bg-white shadow-sm transition-colors"
-                      title="Delete Product"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="text-lg font-medium text-gray-800 mb-1">{product.title}</h3>
-                  <p className="text-pink-600 font-semibold mb-2">₹{product.price.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-4">{product.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="px-2 py-0.5 bg-pink-100 text-pink-600 rounded-full text-xs font-medium">{product.type}</span>
-                  </div>
-                  <div className="mt-auto pt-4 border-t border-pink-50 flex justify-between items-center text-sm text-gray-600">
-                    <span>Stock: {product.inventory}</span>
-                    <span>ID: {product._id.slice(-6)}</span>
-                  </div>
-                </div>
               </div>
-              ))}
             </div>
-          ) : (
-            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-pink-100">
-              <p className="text-gray-400 italic">No products found. Start by adding your first masterpiece above!</p>
+          </div>
+        )}
+
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+               <div className="p-6 border-b border-gray-50">
+                  <h3 className="font-bold text-gray-900">Recent Transactions</h3>
+               </div>
+
+               {loading ? (
+                 <div className="p-20 text-center text-pink-500">Syncing orders...</div>
+               ) : Array.isArray(orders) && orders.length > 0 ? (
+                 <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead className="bg-gray-50">
+                        <tr className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+                          <th className="px-6 py-4">Order ID & Date</th>
+                          <th className="px-6 py-4">Customer</th>
+                          <th className="px-6 py-4">Details</th>
+                          <th className="px-6 py-4">Total</th>
+                          <th className="px-6 py-4">Status</th>
+                          <th className="px-6 py-4 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {orders.map((o) => (
+                        <tr key={o._id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="px-6 py-5">
+                            <span className="block text-xs font-bold text-gray-900">{o.orderNumber || o._id.slice(-8).toUpperCase()}</span>
+                            <span className="text-[10px] text-gray-400 font-medium">{new Date(o.createdAt).toLocaleDateString()}</span>
+                          </td>
+                          <td className="px-6 py-5 text-sm font-medium text-gray-900">
+                             {o.user?.name || o.shippingAddress?.fullName}
+                             <span className="block text-[10px] text-gray-400">{o.user?.email}</span>
+                          </td>
+                          <td className="px-6 py-5">
+                             <div className="flex -space-x-2">
+                               {o.items?.slice(0, 3).map((item, i) => (
+                                 <img key={i} src={item.image} className="w-7 h-7 rounded-full border-2 border-white object-cover shadow-sm bg-gray-100" />
+                               ))}
+                               {o.items?.length > 3 && (
+                                 <div className="w-7 h-7 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400 shadow-sm">+{o.items.length - 3}</div>
+                               )}
+                             </div>
+                          </td>
+                          <td className="px-6 py-5 text-sm font-bold text-gray-900">₹{o.totalAmount}</td>
+                          <td className="px-6 py-5">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(o.orderStatus)}`}>
+                              {o.orderStatus}
+                            </span>
+                          </td>
+                          <td className="px-6 py-5 text-right">
+                             <Select 
+                               value={o.orderStatus} 
+                               onValueChange={(v) => handleStatusUpdate(o._id, v)}
+                             >
+                                <SelectTrigger className="w-28 h-8 rounded-lg border-gray-100 bg-white text-[10px] font-bold">
+                                   <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                   {['placed', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
+                                     <SelectItem key={s} value={s} className="text-xs capitalize">{s}</SelectItem>
+                                   ))}
+                                </SelectContent>
+                             </Select>
+                          </td>
+                        </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                 </div>
+               ) : (
+                 <div className="p-20 text-center text-gray-400">No orders found yet. Keep marketing!</div>
+               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

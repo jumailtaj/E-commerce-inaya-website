@@ -42,7 +42,7 @@ const path = require('path');
 
 // Create a new product
 const createProduct = async (req, res) => {
-  const { title, description, price, inventory, type } = req.body;
+  const { title, description, price, inventory, stock, type, category, isFeatured, brand, discountPrice } = req.body;
   let image = '/placeholder.png';
 
   try {
@@ -59,9 +59,13 @@ const createProduct = async (req, res) => {
       title,
       description,
       price: Number(price),
-      inventory: Number(inventory),
+      discountPrice: discountPrice ? Number(discountPrice) : undefined,
+      inventory: Number(inventory || stock || 0),
+      stock: Number(stock || inventory || 0),
       image,
-      type,
+      category: category || type, // Map type to category
+      brand: brand || 'Inaya',
+      isFeatured: isFeatured === 'true' || isFeatured === true,
     });
 
     const newProduct = await product.save();
@@ -75,13 +79,18 @@ const createProduct = async (req, res) => {
 // Update a product
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { title, description, price, inventory, type } = req.body;
+  const { title, description, price, discountPrice, inventory, stock, type, category, isFeatured, brand } = req.body;
+  
   let updateData = { 
     title, 
     description, 
-    price: Number(price), 
-    inventory: Number(inventory),
-    type
+    price: price ? Number(price) : undefined, 
+    discountPrice: discountPrice ? Number(discountPrice) : undefined,
+    inventory: inventory ? Number(inventory) : (stock ? Number(stock) : undefined),
+    stock: stock ? Number(stock) : (inventory ? Number(inventory) : undefined),
+    category: category || type,
+    brand,
+    isFeatured: isFeatured === 'true' || isFeatured === true,
   };
 
   try {
