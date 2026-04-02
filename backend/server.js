@@ -50,6 +50,8 @@ const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const { logout } = require("./controllers/userController");
 const { protect } = require("./middleware/authMiddleware");
 
@@ -58,6 +60,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/admin", adminRoutes);
 app.post("/api/auth/logout", protect, logout);
 
 // Error Handling

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+  orderNumber: {
+    type: String,
+    unique: true
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -8,19 +12,18 @@ const orderSchema = new mongoose.Schema({
   },
   items: [
     {
-      product: {
+      productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
       },
+      name: String,   // Snapshot
+      price: Number,  // Snapshot
+      image: String,  // Snapshot
       quantity: {
         type: Number,
         required: true,
         min: 1
-      },
-      price: {
-        type: Number,
-        required: true
       }
     }
   ],
@@ -29,32 +32,39 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
   shippingAddress: {
-    street: String,
+    fullName: String,
+    addressLine: String,
     city: String,
     state: String,
-    zipCode: String,
-    country: String
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'paid', 'failed'],
-    default: 'pending'
+    pincode: String,
+    phone: String
   },
   orderStatus: {
     type: String,
-    enum: ['placed', 'shipped', 'delivered', 'cancelled'],
-    default: 'placed'
+    enum: ['pending', 'placed', 'processing', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending'
   },
-  razorpayOrderId: {
-    type: String,
-    required: true
+  paymentStatus: {
+    type: String, // Mirror for easy display
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending'
   },
-  razorpayPaymentId: {
-    type: String
-  },
-  razorpaySignature: {
-    type: String
+  payment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment'
   }
 }, { timestamps: true });
+
+// Pre-save to generate a human-unique Order ID (e.g. INY-1712034567)
+orderSchema.pre('validate', function(next) {
+  if (!this.orderNumber) {
+    this.orderNumber = 'INY-' + Math.floor(Date.now() / 1000);
+  }
+  next();
+});
+
+orderSchema.index({ orderNumber: 1 });
+orderSchema.index({ user: 1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Order', orderSchema);

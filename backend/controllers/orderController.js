@@ -1,5 +1,6 @@
 const Order = require('../models/order');
 const Product = require('../models/product');
+const Payment = require('../models/payment');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
@@ -18,16 +19,10 @@ const getRazorpayInstance = () => {
 // @route   POST /api/orders/create
 // @access  Private
 exports.createOrder = async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'User not authenticated in request' });
-  }
-  
-  console.log('Using Razorpay Key:', process.env.RAZORPAY_KEY_ID);
   try {
     const razorpay = getRazorpayInstance();
     const { items, shippingAddress } = req.body;
 
-    console.log('Creating order for items:', JSON.stringify(items));
     if (!items || items.length === 0) {
       return res.status(400).json({ message: 'No items in order' });
     }
@@ -35,78 +30,73 @@ exports.createOrder = async (req, res) => {
     let totalAmount = 0;
     const orderItems = [];
 
-    // Calculate total amount and verify products
+    // 1. Validate stock and capture Snapshots
     for (const item of items) {
-      console.log('Checking product with ID:', item.product);
       const product = await Product.findById(item.product);
       if (!product) {
-        console.error('Product NOT found for ID:', item.product);
         return res.status(404).json({ message: `Product not found: ${item.product}` });
       }
-      console.log('Found product:', product.title || product.name, 'Inventory:', product.inventory, 'Stock:', product.stock);
-      const stockAvailable = product.inventory !== undefined ? product.inventory : product.stock;
+      
+      const stockAvailable = product.stock !== undefined ? product.stock : product.inventory;
       if (stockAvailable < item.quantity) {
-        console.error('Insufficient inventory for:', product.title || product.name);
-        return res.status(400).json({ message: `Insufficient inventory for ${product.title || product.name}` });
+        return res.status(400).json({ message: `Insufficient inventory for ${product.title}` });
       }
       
-      const price = product.price;
+      const price = product.discountPrice || product.price;
       totalAmount += price * item.quantity;
+
       orderItems.push({
-        product: product._id,
-        quantity: item.quantity,
-        price: price
+        productId: product._id,
+        name: product.title,
+        price: price,
+        image: product.image,
+        quantity: item.quantity
       });
     }
 
-    // Razorpay options
+    // 2. Initialize Razorpay order
     const options = {
-      amount: Math.round(totalAmount * 100), // amount in smallest currency unit (paise)
+      amount: Math.round(totalAmount * 100),
       currency: 'INR',
       receipt: `receipt_${Date.now()}`
     };
 
-    console.log('Initializing Razorpay order with options:', JSON.stringify(options));
     const razorpayOrder = await razorpay.orders.create(options);
     
-    if (!razorpayOrder || !razorpayOrder.id) {
-      console.error('Razorpay order creation returned invalid response:', razorpayOrder);
-      throw new Error('Failed to create Razorpay order');
-    }
-    
-    console.log('Razorpay order created successfully:', razorpayOrder.id);
-
+    // 3. Create Order Document
     const order = new Order({
       user: req.user._id,
       items: orderItems,
       totalAmount: totalAmount,
       shippingAddress: shippingAddress,
-      razorpayOrderId: razorpayOrder.id,
+      orderStatus: 'pending',
       paymentStatus: 'pending'
     });
+    const savedOrder = await order.save();
 
-    const createdOrder = await order.save();
-    console.log('Order saved to database:', createdOrder._id);
+    // 4. Create Payment Document
+    const payment = new Payment({
+      order: savedOrder._id,
+      user: req.user._id,
+      amount: totalAmount,
+      razorpayOrderId: razorpayOrder.id,
+      status: 'pending'
+    });
+    const savedPayment = await payment.save();
+
+    // 5. Link Payment back to Order
+    savedOrder.payment = savedPayment._id;
+    await savedOrder.save();
 
     res.status(201).json({
-      orderId: createdOrder._id,
+      orderId: savedOrder._id,
       razorpayOrderId: razorpayOrder.id,
       amount: options.amount,
       currency: options.currency
     });
   } catch (error) {
-    console.error('CRITICAL ERROR in createOrder:', {
-      message: error.message,
-      stack: error.stack,
-      razorpayError: error.payment_id ? error : 'N/A' // Razorpay errors sometimes have unique fields
-    });
-    
-    res.status(500).json({ 
-      message: 'Failed to initialize payment. ' + (error.message || 'Please try again.'), 
-      error: error.message,
-      // Temporarily include full error for easier debugging by the user
-      details: error
-    });
+    console.error('Order creation failed:', error);
+    res.status(500).json({ message: 'Failed to initialize payment', error: error.message });
   }
 };
 
@@ -128,45 +118,37 @@ exports.verifyPayment = async (req, res) => {
       .digest('hex');
 
     if (razorpay_signature === expectedSign) {
-      console.log('Payment verified successfully for order:', razorpay_order_id);
-      
-      // IDEMPOTENCY CHECK: Check if this payment_id has already been processed
-      const existingPayment = await Order.findOne({ razorpayPaymentId: razorpay_payment_id });
-      if (existingPayment) {
-        console.warn('Idempotency alert: payment_id already processed:', razorpay_payment_id);
-        return res.status(200).json({ message: 'Payment already processed', order: existingPayment });
+      // 1. Find and update payment
+      const payment = await Payment.findOne({ razorpayOrderId: razorpay_order_id });
+      if (!payment) return res.status(404).json({ message: 'Payment record not found' });
+
+      if (payment.status === 'completed') {
+          return res.status(200).json({ message: 'Payment already verified' });
       }
 
-      order.paymentStatus = 'paid';
-      order.razorpayPaymentId = razorpay_payment_id;
-      order.razorpaySignature = razorpay_signature;
-      await order.save();
-      console.log(`SECURE LOG: Order marked as PAID. OrderID: ${order._id}, RazorpayOrderID: ${razorpay_order_id}, PaymentID: ${razorpay_payment_id}`);
+      payment.status = 'completed';
+      payment.razorpayPaymentId = razorpay_payment_id;
+      payment.razorpaySignature = razorpay_signature;
+      await payment.save();
 
-      // Update product inventory
+      // 2. Update order
+      const order = await Order.findById(payment.order);
+      order.paymentStatus = 'paid';
+      order.orderStatus = 'placed';
+      await order.save();
+
+      // 3. Deduct stock atomically
       for (const item of order.items) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          const oldStock = product.inventory !== undefined ? product.inventory : product.stock;
-          if (product.inventory !== undefined) product.inventory -= item.quantity;
-          if (product.stock !== undefined) product.stock -= item.quantity;
-          await product.save();
-          console.log(`Updated inventory for ${product.title || product.name}: ${oldStock} -> ${oldStock - item.quantity}`);
-        }
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity, inventory: -item.quantity }
+        });
       }
 
       res.status(200).json({ message: 'Payment verified successfully', order });
     } else {
-      console.error('INVALID SIGNATURE in verifyPayment:', {
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id,
-        receivedSignature: razorpay_signature,
-        expectedSignature: expectedSign
-      });
       res.status(400).json({ message: 'Invalid payment signature' });
     }
   } catch (error) {
-    console.error('CRITICAL ERROR in verifyPayment:', error);
     res.status(500).json({ message: 'Failed to verify payment', error: error.message });
   }
 };
@@ -177,7 +159,6 @@ exports.verifyPayment = async (req, res) => {
 exports.getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
-      .populate('items.product', 'title image')
       .sort({ createdAt: -1 })
       .lean();
     res.json(orders);
@@ -192,26 +173,20 @@ exports.getMyOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('items.product', 'title image price')
+      .populate('payment')
       .lean();
       
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-    
-    // Check if order belongs to user
-    if (order.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.user.toString() !== req.user._id.toString()) return res.status(401).json({ message: 'Not authorized' });
     
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 // @desc    Handle Razorpay Webhooks
 // @route   POST /api/orders/webhook
-// @access  Public
 exports.handleWebhook = async (req, res) => {
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
   const signature = req.headers['x-razorpay-signature'];
@@ -223,57 +198,36 @@ exports.handleWebhook = async (req, res) => {
 
     if (signature === digest) {
       const event = req.body.event;
-      console.log('WEBHOOK RECEIVED:', event);
-
       if (event === 'payment.captured') {
         const payload = req.body.payload.payment.entity;
-        const orderId = payload.order_id;
-        const paymentId = payload.id;
+        const razorpayOrderId = payload.order_id;
+        
+        const payment = await Payment.findOne({ razorpayOrderId });
+        if (payment && payment.status === 'pending') {
+          payment.status = 'completed';
+          payment.razorpayPaymentId = payload.id;
+          await payment.save();
 
-        // Find the order
-        const order = await Order.findOne({ razorpayOrderId: orderId });
-        if (order && order.paymentStatus === 'pending') {
-          console.log(`WEBHOOK LOG: Updating order ${order._id} to PAID via webhook`);
-          
-          // IDEMPOTENCY CHECK
-          const existingPayment = await Order.findOne({ razorpayPaymentId: paymentId });
-          if (existingPayment) {
-             return res.status(200).json({ status: 'ok' });
-          }
+          const order = await Order.findById(payment.order);
+          if (order && order.paymentStatus === 'pending') {
+            order.paymentStatus = 'paid';
+            order.orderStatus = 'placed';
+            await order.save();
 
-          order.paymentStatus = 'paid';
-          order.razorpayPaymentId = paymentId;
-          await order.save();
-
-          // Update product inventory
-          for (const item of order.items) {
-            const product = await Product.findById(item.product);
-            if (product) {
-              if (product.inventory !== undefined) product.inventory -= item.quantity;
-              if (product.stock !== undefined) product.stock -= item.quantity;
-              await product.save();
+            for (const item of order.items) {
+              await Product.findByIdAndUpdate(item.productId, {
+                $inc: { stock: -item.quantity, inventory: -item.quantity }
+              });
             }
           }
         }
-      } else if (event === 'payment.failed') {
-        const payload = req.body.payload.payment.entity;
-        const orderId = payload.order_id;
-        
-        const order = await Order.findOne({ razorpayOrderId: orderId });
-        if (order && order.paymentStatus === 'pending') {
-          order.paymentStatus = 'failed';
-          await order.save();
-          console.log(`WEBHOOK LOG: Marked order ${order._id} as FAILED via webhook`);
-        }
       }
-
       res.status(200).json({ status: 'ok' });
     } else {
-      console.error('WEBHOOK ERROR: Invalid signature');
       res.status(400).json({ message: 'Invalid signature' });
     }
   } catch (error) {
-    console.error('WEBHOOK CRITICAL ERROR:', error);
+    console.error('Webhook Error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -286,10 +240,15 @@ exports.failOrder = async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
     
-    // Only fail if still pending
     if (order.paymentStatus === 'pending') {
       order.paymentStatus = 'failed';
       await order.save();
+      
+      const payment = await Payment.findOne({ order: order._id });
+      if (payment) {
+          payment.status = 'failed';
+          await payment.save();
+      }
     }
     
     res.json({ message: 'Order marked as failed' });
