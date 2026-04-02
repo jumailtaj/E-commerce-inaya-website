@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Upload, Pencil, Trash2, Plus, LayoutDashboard, ShoppingBag, Package, TrendingUp, CheckCircle, Clock } from 'lucide-react';
+import { Upload, Pencil, Trash2, Plus, LayoutDashboard, ShoppingBag, Package, TrendingUp, CheckCircle, Clock, Eye, X, MapPin, CreditCard, User } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../api/axios';
 
@@ -20,6 +20,7 @@ export function AdminPage() {
   const { user, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('products');
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -79,6 +80,9 @@ export function AdminPage() {
       await api.put(`/admin/orders/${orderId}/status`, { status: newStatus });
       toast.success(`Order set to ${newStatus}`);
       fetchOrders(); // Refresh list
+      if (selectedOrder?._id === orderId) {
+        setSelectedOrder(prev => ({ ...prev, orderStatus: newStatus }));
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Update failed');
     }
@@ -178,7 +182,7 @@ export function AdminPage() {
         
         <nav className="flex-1 px-4 space-y-1">
           <button 
-            onClick={() => setActiveTab('products')}
+            onClick={() => { setActiveTab('products'); setSelectedOrder(null); }}
             className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'products' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             <Package className="w-5 h-5 mr-3" />
@@ -345,8 +349,8 @@ export function AdminPage() {
         )}
 
         {activeTab === 'orders' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="space-y-6 relative">
+            <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${selectedOrder ? 'hidden' : 'block'}`}>
                <div className="p-6 border-b border-gray-50">
                   <h3 className="font-bold text-gray-900">Recent Transactions</h3>
                </div>
@@ -360,7 +364,7 @@ export function AdminPage() {
                         <tr className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
                           <th className="px-6 py-4">Order ID & Date</th>
                           <th className="px-6 py-4">Customer</th>
-                          <th className="px-6 py-4">Details</th>
+                          <th className="px-6 py-4">Items</th>
                           <th className="px-6 py-4">Total</th>
                           <th className="px-6 py-4">Status</th>
                           <th className="px-6 py-4 text-right">Action</th>
@@ -393,12 +397,19 @@ export function AdminPage() {
                               {o.orderStatus}
                             </span>
                           </td>
-                          <td className="px-6 py-5 text-right">
+                          <td className="px-6 py-5 text-right flex items-center justify-end gap-2">
+                             <button 
+                               onClick={() => setSelectedOrder(o)}
+                               className="p-2 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all"
+                               title="View Detail"
+                             >
+                                <Eye className="w-5 h-5" />
+                             </button>
                              <Select 
                                value={o.orderStatus} 
                                onValueChange={(v) => handleStatusUpdate(o._id, v)}
                              >
-                                <SelectTrigger className="w-28 h-8 rounded-lg border-gray-100 bg-white text-[10px] font-bold">
+                                <SelectTrigger className="w-28 h-8 rounded-lg border-gray-100 bg-white text-[10px] font-bold shadow-none">
                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
@@ -417,6 +428,113 @@ export function AdminPage() {
                  <div className="p-20 text-center text-gray-400">No orders found yet. Keep marketing!</div>
                )}
             </div>
+
+            {/* Detail View Section */}
+            {selectedOrder && (
+              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
+                <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-900 text-white">
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                       <X className="w-5 h-5" />
+                    </button>
+                    <div>
+                      <h3 className="font-bold">Order Details</h3>
+                      <p className="text-[10px] opacity-70 uppercase tracking-widest">{selectedOrder.orderNumber}</p>
+                    </div>
+                  </div>
+                  <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(selectedOrder.orderStatus)} border-opacity-20`}>
+                    {selectedOrder.orderStatus}
+                  </div>
+                </div>
+
+                <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                  {/* Left Column: Line Items */}
+                  <div className="lg:col-span-2 space-y-8">
+                     <div>
+                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                         <Package className="w-4 h-4 mr-2" /> Line Items
+                       </h4>
+                       <div className="bg-gray-50 rounded-2xl p-4 divide-y divide-gray-100">
+                         {selectedOrder.items?.map((item, idx) => (
+                           <div key={idx} className="py-4 flex items-center">
+                              <img src={item.image} className="w-16 h-16 rounded-xl object-cover bg-white" />
+                              <div className="ml-4 flex-1">
+                                <p className="text-sm font-bold text-gray-900">{item.name}</p>
+                                <p className="text-xs text-gray-500">₹{item.price} x {item.quantity}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-bold text-gray-900">₹{item.price * item.quantity}</p>
+                              </div>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+
+                     <div className="flex justify-between items-center p-6 bg-pink-50 rounded-2xl border border-pink-100">
+                        <span className="text-sm font-bold text-pink-900 uppercase">Total Transaction Value</span>
+                        <span className="text-2xl font-serif font-bold text-pink-600">₹{selectedOrder.totalAmount}</span>
+                     </div>
+                  </div>
+
+                  {/* Right Column: Customer/Shipping/Payment */}
+                  <div className="space-y-8">
+                    {/* Customer */}
+                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                         <User className="w-4 h-4 mr-2" /> Customer Info
+                      </h4>
+                      <p className="text-sm font-bold text-gray-900">{selectedOrder.user?.name || selectedOrder.shippingAddress?.fullName}</p>
+                      <p className="text-xs text-gray-500">{selectedOrder.user?.email}</p>
+                      <p className="text-xs text-gray-500 mt-1">{selectedOrder.user?.mobile || selectedOrder.shippingAddress?.phone}</p>
+                    </div>
+
+                    {/* Shipping */}
+                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                         <MapPin className="w-4 h-4 mr-2" /> Shipping Target
+                      </h4>
+                      <div className="text-xs text-gray-700 leading-relaxed">
+                        <p className="font-bold">{selectedOrder.shippingAddress?.fullName}</p>
+                        <p>{selectedOrder.shippingAddress?.addressLine}</p>
+                        <p>{selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state}</p>
+                        <p className="font-mono">{selectedOrder.shippingAddress?.pincode}</p>
+                        <p className="mt-2 text-gray-400">Phone: {selectedOrder.shippingAddress?.phone}</p>
+                      </div>
+                    </div>
+
+                    {/* Payment */}
+                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                         <CreditCard className="w-4 h-4 mr-2" /> Payment Logic
+                      </h4>
+                      <div className="flex justify-between items-center mb-3">
+                         <span className="text-[10px] font-bold text-gray-400">Gateway Status</span>
+                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-50 text-green-600 border border-green-100">Paid</span>
+                      </div>
+                      <p className="text-[10px] text-gray-400">Reference: <span className="font-mono text-gray-900">{selectedOrder.payment?.razorpay_payment_id || 'N/A'}</span></p>
+                    </div>
+
+                    {/* Quick Update */}
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Process Order</p>
+                      <Select 
+                         value={selectedOrder.orderStatus} 
+                         onValueChange={(v) => handleStatusUpdate(selectedOrder._id, v)}
+                       >
+                          <SelectTrigger className="w-full h-12 rounded-xl border-pink-100 bg-pink-50 text-pink-600 font-bold">
+                             <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                             {['placed', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
+                               <SelectItem key={s} value={s} className="text-xs capitalize">{s}</SelectItem>
+                             ))}
+                          </SelectContent>
+                       </Select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
