@@ -31,6 +31,9 @@ app.use(async (req, res, next) => {
 const authRoutes = require("../routes/authRoutes");
 const productRoutes = require("../routes/productRoutes");
 const orderRoutes = require("../routes/orderRoutes");
+const userRoutes = require("../routes/userRoutes");
+const cartRoutes = require("../routes/cartRoutes");
+const adminRoutes = require("../routes/adminRoutes");
 const productController = require("../controllers/productController");
 const orderController = require("../controllers/orderController");
 const { protect } = require("../middleware/authMiddleware");
@@ -40,7 +43,7 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "API working" });
 });
 
-// Direct endpoints
+// Direct endpoints for backward compatibility
 app.get("/api/products", productController.getProducts);
 app.get("/api/product/:id", productController.getProductById);
 app.get("/api/products/:id", productController.getProductById);
@@ -51,5 +54,14 @@ app.post("/api/verify-payment", protect, orderController.verifyPayment);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/admin", adminRoutes);
+
+// Generic error handler for serverless functions
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "API Runtime Error", details: err.message });
+});
 
 module.exports = serverless(app);
