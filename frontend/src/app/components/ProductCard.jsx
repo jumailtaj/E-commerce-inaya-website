@@ -11,7 +11,7 @@ export const ProductCard = memo(function ProductCard({ product }) {
 
   return (
     <Link to={`/product/${product.id || product._id}`} className="group">
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="aspect-square overflow-hidden bg-pink-50">
           <img
             src={optimizedImageSrc}
