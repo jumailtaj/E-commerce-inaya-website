@@ -5,9 +5,9 @@ export function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-pink-100">
+        <div className="bg-white rounded-sm shadow-xl p-6 md:p-8 border border-pink-100">
           <div className="flex items-center gap-4 mb-6">
-            <div className="bg-pink-100 p-2.5 rounded-xl">
+            <div className="bg-pink-100 p-2.5 rounded-sm">
               <Shield className="w-8 h-8 text-pink-600" />
             </div>
             <h1 className="text-3xl font-serif text-gray-900">Privacy Policy</h1>

@@ -31,8 +31,8 @@ export class ErrorBoundary extends React.Component {
 
       return (
         <div className="min-h-[60vh] flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-pink-100 p-8 text-center">
-            <div className="w-16 h-16 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="max-w-md w-full bg-white rounded-sm shadow-xl border border-pink-100 p-8 text-center">
+            <div className="w-16 h-16 bg-pink-50 rounded-sm flex items-center justify-center mx-auto mb-6">
               {isChunkError ? (
                 <RefreshCcw className="w-8 h-8 text-pink-500 animate-spin-slow" />
               ) : (
@@ -53,7 +53,7 @@ export class ErrorBoundary extends React.Component {
             <div className="flex flex-col gap-3">
               <Button 
                 onClick={this.handleReload}
-                className="w-full rounded-full bg-pink-600 hover:bg-pink-700 text-white h-12"
+                className="w-full rounded-sm bg-pink-600 hover:bg-pink-700 text-white h-12"
               >
                 <RefreshCcw className="w-4 h-4 mr-2" />
                 Reload App
@@ -62,7 +62,7 @@ export class ErrorBoundary extends React.Component {
               <Button 
                 onClick={this.handleGoHome}
                 variant="outline"
-                className="w-full rounded-full border-pink-200 text-gray-600 hover:bg-pink-50 h-12"
+                className="w-full rounded-sm border-pink-200 text-gray-600 hover:bg-pink-50 h-12"
               >
                 <Home className="w-4 h-4 mr-2" />
                 Return to Home
@@ -74,7 +74,7 @@ export class ErrorBoundary extends React.Component {
                 <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600">
                   Error Details (Dev Only)
                 </summary>
-                <pre className="mt-2 p-3 bg-gray-50 rounded-lg text-[10px] text-red-500 overflow-auto max-h-40">
+                <pre className="mt-2 p-3 bg-gray-50 rounded-sm text-[10px] text-red-500 overflow-auto max-h-40">
                   {this.state.error?.toString()}
                 </pre>
               </details>

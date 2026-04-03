@@ -63,7 +63,7 @@ export function HomePage() {
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${selectedType === type
+                className={`px-4 py-1.5 rounded-sm text-sm font-medium transition-all ${selectedType === type
                     ? 'bg-pink-600 text-white shadow-md'
                     : 'bg-white text-gray-600 hover:bg-pink-50 border border-pink-100'
                   }`}
@@ -77,7 +77,7 @@ export function HomePage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm animate-pulse">
+              <div key={i} className="bg-white rounded-sm overflow-hidden shadow-sm animate-pulse">
                 <div className="aspect-square bg-gray-200"></div>
                 <div className="p-2">
                   <div className="h-4 bg-gray-200 w-3/4 mb-2"></div>
@@ -90,7 +90,7 @@ export function HomePage() {
               <ProductCard key={product.id || product._id} product={product} />
             ))
           ) : (
-            <div className="col-span-full py-20 text-center bg-white rounded-3xl border-2 border-dashed border-pink-100">
+            <div className="col-span-full py-20 text-center bg-white rounded-sm border-2 border-dashed border-pink-100">
               <p className="text-gray-400 italic">No products found matching your selection.</p>
             </div>
           )}

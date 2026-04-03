@@ -219,7 +219,7 @@ export function CheckoutPage() {
                           <div 
                             key={addr._id}
                             onClick={() => selectSavedAddress(addr)}
-                            className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                            className={`p-3 rounded-sm border-2 cursor-pointer transition-all ${
                               isSelected ? 'border-pink-500 bg-pink-50/50' : 'border-gray-100 hover:border-pink-200 bg-white'
                             }`}
                           >
@@ -235,7 +235,7 @@ export function CheckoutPage() {
                       })}
                       <div 
                         onClick={() => navigate('/profile', { state: { activeTab: 'addresses' } })}
-                        className="p-3 rounded-xl border-2 border-dashed border-pink-100 hover:border-pink-300 hover:bg-pink-50/20 cursor-pointer flex items-center justify-center gap-2 group transition-all"
+                        className="p-3 rounded-sm border-2 border-dashed border-pink-100 hover:border-pink-300 hover:bg-pink-50/20 cursor-pointer flex items-center justify-center gap-2 group transition-all"
                       >
                         <Plus className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-bold text-pink-400">New Address</span>
@@ -254,7 +254,7 @@ export function CheckoutPage() {
                       placeholder="123 Main St"
                       value={shippingAddress.street}
                       onChange={handleInputChange}
-                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
+                      className="h-11 rounded-sm border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -266,7 +266,7 @@ export function CheckoutPage() {
                       placeholder="Mumbai"
                       value={shippingAddress.city}
                       onChange={handleInputChange}
-                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
+                      className="h-11 rounded-sm border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                   <div className="space-y-2">
@@ -277,7 +277,7 @@ export function CheckoutPage() {
                       placeholder="Maharashtra"
                       value={shippingAddress.state}
                       onChange={handleInputChange}
-                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
+                      className="h-11 rounded-sm border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                 </div>
@@ -290,7 +290,7 @@ export function CheckoutPage() {
                       placeholder="400001"
                       value={shippingAddress.zipCode}
                       onChange={handleInputChange}
-                      className="h-11 rounded-xl border-pink-50 px-4 focus-visible:ring-pink-200"
+                      className="h-11 rounded-sm border-pink-50 px-4 focus-visible:ring-pink-200"
                     />
                   </div>
                   <div className="space-y-2">
@@ -316,8 +316,8 @@ export function CheckoutPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="flex items-center gap-4 p-4 border-2 border-pink-100 rounded-xl bg-pink-50/30">
-                  <div className="bg-pink-100 p-2 rounded-lg">
+                <div className="flex items-center gap-4 p-4 border-2 border-pink-100 rounded-sm bg-pink-50/30">
+                  <div className="bg-pink-100 p-2 rounded-sm">
                     <ShieldCheck className="w-6 h-6 text-pink-600" />
                   </div>
                   <div>
@@ -372,11 +372,11 @@ export function CheckoutPage() {
                 <Button
                   onClick={handlePayment}
                   disabled={loading || isProcessing}
-                  className="w-full rounded-full bg-pink-600 hover:bg-pink-700 text-white text-lg py-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full rounded-sm bg-pink-600 hover:bg-pink-700 text-white text-lg py-6 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
                     <div className="flex items-center gap-2">
-                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-sm animate-spin" />
                        Processing...
                     </div>
                   ) : 'Pay Now'}

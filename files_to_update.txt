@@ -1,0 +1,8 @@
+frontend\src\app\pages\CartPage.jsx
+frontend\src\app\pages\CheckoutPage.jsx
+frontend\src\app\pages\OrderHistoryPage.jsx
+frontend\src\app\pages\PrivacyPolicy.jsx
+frontend\src\app\pages\ProfilePage.jsx
+frontend\src\app\pages\RefundPolicy.jsx
+frontend\src\app\pages\ShippingPolicy.jsx
+frontend\src\app\pages\TermsAndConditions.jsx

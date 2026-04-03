@@ -22,7 +22,7 @@ export function CartPage() {
             <p className="text-gray-600 mb-6">Add some beautiful hair clips to get started!</p>
             <Button
               onClick={() => navigate('/')}
-              className="rounded-full bg-pink-600 hover:bg-pink-700 text-white"
+              className="rounded-sm bg-pink-600 hover:bg-pink-700 text-white"
             >
               Continue Shopping
             </Button>
@@ -41,11 +41,11 @@ export function CartPage() {
           {cartItems.map((item) => (
             <div
               key={item.product._id || item.product.id}
-              className="bg-white rounded-2xl shadow-sm p-4 sm:p-6"
+              className="bg-white rounded-sm shadow-sm p-4 sm:p-6"
             >
               <div className="flex gap-4">
                 {/* Product Image */}
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-pink-50 flex-shrink-0">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-sm overflow-hidden bg-pink-50 flex-shrink-0">
                     <img
                       src={item.product.image || '/placeholder.png'}
                       alt={item.product.name}
@@ -70,7 +70,7 @@ export function CartPage() {
                         variant="outline"
                         size="icon"
                         onClick={() => updateQuantity(item.product._id || item.product.id, item.quantity - 1)}
-                        className="h-8 w-8 rounded-full border-pink-200 hover:bg-pink-50"
+                        className="h-8 w-8 rounded-sm border-pink-200 hover:bg-pink-50"
                       >
                         <Minus className="w-3 h-3" />
                       </Button>
@@ -79,7 +79,7 @@ export function CartPage() {
                         variant="outline"
                         size="icon"
                         onClick={() => updateQuantity(item.product._id || item.product.id, item.quantity + 1)}
-                        className="h-8 w-8 rounded-full border-pink-200 hover:bg-pink-50"
+                        className="h-8 w-8 rounded-sm border-pink-200 hover:bg-pink-50"
                       >
                         <Plus className="w-3 h-3" />
                       </Button>
@@ -106,7 +106,7 @@ export function CartPage() {
         </div>
 
         {/* Cart Summary */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
+        <div className="bg-white rounded-sm shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
             <span className="text-xl text-gray-800">Total</span>
             <span className="text-2xl text-pink-600">
@@ -115,7 +115,7 @@ export function CartPage() {
           </div>
           <Button
             onClick={handleCheckout}
-            className="w-full rounded-full bg-pink-600 hover:bg-pink-700 text-white text-lg py-6"
+            className="w-full rounded-sm bg-pink-600 hover:bg-pink-700 text-white text-lg py-6"
           >
             Proceed to Checkout
           </Button>

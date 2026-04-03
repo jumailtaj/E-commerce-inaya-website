@@ -13,7 +13,7 @@ export function Hero() {
           </p>
           <Link
             to="#products"
-            className="inline-block bg-pink-600 text-white px-6 py-3 rounded-full font-medium text-base hover:bg-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-block bg-pink-600 text-white px-6 py-3 rounded-sm font-medium text-base hover:bg-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             onClick={(e) => {
               e.preventDefault();
               document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });

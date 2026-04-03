@@ -63,10 +63,10 @@ export function SignupPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-sm sm:px-10">
           <form className="space-y-6" onSubmit={handleSignup}>
             {error && (
-              <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm border border-red-100">
+              <div className="bg-red-50 text-red-500 p-3 rounded-sm text-sm border border-red-100">
                 {error}
               </div>
             )}
@@ -180,7 +180,7 @@ export function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-sm shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {loading ? 'Creating Account...' : 'Sign Up'}
               </button>
@@ -215,7 +215,7 @@ export function SignupPage() {
             <div className="mt-6">
               <Link
                 to="/login"
-                className="w-full flex justify-center py-2 px-4 border border-pink-300 rounded-md shadow-sm text-sm font-medium text-pink-600 bg-white hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                className="w-full flex justify-center py-2 px-4 border border-pink-300 rounded-sm shadow-sm text-sm font-medium text-pink-600 bg-white hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
               >
                 Sign in
               </Link>

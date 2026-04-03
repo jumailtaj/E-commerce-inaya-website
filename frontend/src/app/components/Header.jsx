@@ -47,7 +47,7 @@ export function Header() {
                 placeholder="Search hair clips..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 rounded-full border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+                className="pl-10 rounded-sm border-pink-200 focus:border-pink-300 focus:ring-pink-200"
               />
             </div>
           </form>
@@ -57,12 +57,12 @@ export function Header() {
             <ProfileDropdown />
             <button
               onClick={() => navigate('/cart')}
-              className="relative p-2 hover:bg-pink-50 rounded-full transition-colors"
+              className="relative p-2 hover:bg-pink-50 rounded-sm transition-colors"
               aria-label="Cart"
             >
               <ShoppingCart className="w-5 h-5 text-gray-700" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-sm w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -79,7 +79,7 @@ export function Header() {
               placeholder="Search hair clips..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-full border-pink-200 focus:border-pink-300 focus:ring-pink-200"
+              className="pl-10 rounded-sm border-pink-200 focus:border-pink-300 focus:ring-pink-200"
             />
           </div>
         </form>

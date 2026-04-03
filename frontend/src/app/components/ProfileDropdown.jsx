@@ -29,17 +29,17 @@ export function ProfileDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-pink-50 rounded-full transition-colors relative group"
+        className="p-2 hover:bg-pink-50 rounded-sm transition-colors relative group"
         aria-label="Profile"
       >
         <User className={`w-5 h-5 ${isAuthenticated ? 'text-pink-600' : 'text-gray-700'} group-hover:text-pink-600`} />
         {isAuthenticated && (
-          <span className="absolute bottom-1.5 right-1.5 w-2 h-2 bg-green-500 border-2 border-white rounded-full"></span>
+          <span className="absolute bottom-1.5 right-1.5 w-2 h-2 bg-green-500 border-2 border-white rounded-sm"></span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-pink-50 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-sm shadow-xl border border-pink-50 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
           {isAuthenticated ? (
             <>
               <div className="px-4 py-3 border-b border-pink-50">

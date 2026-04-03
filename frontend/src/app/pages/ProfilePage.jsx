@@ -116,9 +116,9 @@ export function ProfilePage() {
           
           {/* Sidebar Nav */}
           <div className="md:w-64 shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-pink-50 overflow-hidden">
+            <div className="bg-white rounded-sm shadow-sm border border-pink-50 overflow-hidden">
               <div className="p-6 bg-pink-50/50 border-b border-pink-50">
-                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                <div className="w-16 h-16 bg-pink-100 rounded-sm flex items-center justify-center mb-3">
                   <User className="w-8 h-8 text-pink-600" />
                 </div>
                 <h2 className="font-bold text-gray-900 truncate">{user.name}</h2>
@@ -127,7 +127,7 @@ export function ProfilePage() {
               <nav className="p-2">
                 <button
                   onClick={() => setActiveTab('profile')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium transition-colors ${
                     activeTab === 'profile' ? 'bg-pink-600 text-white shadow-md' : 'text-gray-600 hover:bg-pink-50'
                   }`}
                 >
@@ -136,7 +136,7 @@ export function ProfilePage() {
                 </button>
                 <button
                   onClick={() => setActiveTab('addresses')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium transition-colors ${
                     activeTab === 'addresses' ? 'bg-pink-600 text-white shadow-md' : 'text-gray-600 hover:bg-pink-50'
                   }`}
                 >
@@ -145,7 +145,7 @@ export function ProfilePage() {
                 </button>
                 <button
                   onClick={() => navigate('/orders')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-pink-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium text-gray-600 hover:bg-pink-50 transition-colors"
                 >
                   <Package className="w-4 h-4" />
                   My Orders
@@ -153,7 +153,7 @@ export function ProfilePage() {
                 <div className="my-2 border-t border-pink-50" />
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-sm text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Logout
@@ -165,14 +165,14 @@ export function ProfilePage() {
           {/* Main Content */}
           <div className="flex-1">
             {activeTab === 'profile' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6 md:p-8">
+              <div className="bg-white rounded-sm shadow-sm border border-pink-50 p-6 md:p-8">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Basic Information</h2>
                   {!isEditingProfile && (
                     <Button 
                       variant="outline" 
                       onClick={() => setIsEditingProfile(true)}
-                      className="rounded-full border-pink-100 hover:border-pink-200"
+                      className="rounded-sm border-pink-100 hover:border-pink-200"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Edit Profile
@@ -190,7 +190,7 @@ export function ProfilePage() {
                         disabled={!isEditingProfile}
                         value={profileData.name}
                         onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-xl"
+                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-sm"
                       />
                     </div>
                   </div>
@@ -204,7 +204,7 @@ export function ProfilePage() {
                         disabled={!isEditingProfile}
                         value={profileData.email}
                         onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-xl"
+                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-sm"
                       />
                     </div>
                   </div>
@@ -218,20 +218,20 @@ export function ProfilePage() {
                         value={profileData.phone}
                         onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                         placeholder="Add phone number"
-                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-xl"
+                        className="pl-12 h-12 bg-gray-50/50 border-pink-50 focus:border-pink-200 transition-all shadow-none rounded-sm"
                       />
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-2 pt-2">
                     <Label className="text-xs font-bold uppercase tracking-widest text-gray-400">Account Type</Label>
-                    <div className="inline-flex items-center px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-xs font-bold uppercase tracking-wider border border-pink-100">
+                    <div className="inline-flex items-center px-3 py-1 bg-pink-50 text-pink-600 rounded-sm text-xs font-bold uppercase tracking-wider border border-pink-100">
                       {user.role}
                     </div>
                   </div>
 
                   {isEditingProfile && (
                     <div className="md:col-span-2 flex items-center gap-4 pt-6 border-t border-pink-50 mt-4">
-                      <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-8 h-11">
+                      <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white rounded-sm px-8 h-11">
                         Save Changes
                       </Button>
                       <Button 
@@ -241,7 +241,7 @@ export function ProfilePage() {
                           setIsEditingProfile(false);
                           setProfileData({ name: user.name, email: user.email, phone: user.phone });
                         }}
-                        className="rounded-full h-11"
+                        className="rounded-sm h-11"
                       >
                         Cancel
                       </Button>
@@ -253,13 +253,13 @@ export function ProfilePage() {
 
             {activeTab === 'addresses' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl shadow-sm border border-pink-50 p-6 md:p-8">
+                <div className="bg-white rounded-sm shadow-sm border border-pink-50 p-6 md:p-8">
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Saved Addresses</h2>
                     {!showAddressForm && (
                       <Button 
                         onClick={() => setShowAddressForm(true)}
-                        className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-6 h-11"
+                        className="bg-pink-600 hover:bg-pink-700 text-white rounded-sm px-6 h-11"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Add New
@@ -268,10 +268,10 @@ export function ProfilePage() {
                   </div>
 
                   {showAddressForm && (
-                    <form onSubmit={handleAddressSubmit} className="bg-pink-50/50 rounded-2xl p-6 mb-8 border border-pink-100 animate-in fade-in zoom-in-95 duration-200">
+                    <form onSubmit={handleAddressSubmit} className="bg-pink-50/50 rounded-sm p-6 mb-8 border border-pink-100 animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="font-bold text-gray-900">{editingAddressId ? 'Edit Address' : 'New Address'}</h3>
-                        <button type="button" onClick={resetAddressForm} className="p-2 hover:bg-pink-100 rounded-full transition-colors">
+                        <button type="button" onClick={resetAddressForm} className="p-2 hover:bg-pink-100 rounded-sm transition-colors">
                           <X className="w-4 h-4 text-gray-500" />
                         </button>
                       </div>
@@ -284,7 +284,7 @@ export function ProfilePage() {
                             required
                             value={addressData.fullName}
                             onChange={(e) => setAddressData({ ...addressData, fullName: e.target.value })}
-                            className="bg-white border-pink-100 rounded-xl"
+                            className="bg-white border-pink-100 rounded-sm"
                           />
                         </div>
                         <div className="space-y-2">
@@ -294,7 +294,7 @@ export function ProfilePage() {
                             required
                             value={addressData.addressLine}
                             onChange={(e) => setAddressData({ ...addressData, addressLine: e.target.value })}
-                            className="bg-white border-pink-100 rounded-xl"
+                            className="bg-white border-pink-100 rounded-sm"
                           />
                         </div>
                         <div className="space-y-2">
@@ -304,7 +304,7 @@ export function ProfilePage() {
                             required
                             value={addressData.city}
                             onChange={(e) => setAddressData({ ...addressData, city: e.target.value })}
-                            className="bg-white border-pink-100 rounded-xl"
+                            className="bg-white border-pink-100 rounded-sm"
                           />
                         </div>
                         <div className="space-y-2">
@@ -314,7 +314,7 @@ export function ProfilePage() {
                             required
                             value={addressData.state}
                             onChange={(e) => setAddressData({ ...addressData, state: e.target.value })}
-                            className="bg-white border-pink-100 rounded-xl"
+                            className="bg-white border-pink-100 rounded-sm"
                           />
                         </div>
                         <div className="space-y-2">
@@ -324,7 +324,7 @@ export function ProfilePage() {
                             required
                             value={addressData.pincode}
                             onChange={(e) => setAddressData({ ...addressData, pincode: e.target.value })}
-                            className="bg-white border-pink-100 rounded-xl"
+                            className="bg-white border-pink-100 rounded-sm"
                           />
                         </div>
                         <div className="flex items-center space-x-2 pt-8">
@@ -340,10 +340,10 @@ export function ProfilePage() {
                       </div>
 
                       <div className="flex items-center gap-4 mt-8">
-                        <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-8 h-11 flex-1 sm:flex-none">
+                        <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white rounded-sm px-8 h-11 flex-1 sm:flex-none">
                           {editingAddressId ? 'Update Address' : 'Save Address'}
                         </Button>
-                        <Button type="button" variant="ghost" onClick={resetAddressForm} className="rounded-full h-11 px-8">
+                        <Button type="button" variant="ghost" onClick={resetAddressForm} className="rounded-sm h-11 px-8">
                           Cancel
                         </Button>
                       </div>
@@ -352,7 +352,7 @@ export function ProfilePage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {user.addresses?.length === 0 ? (
-                      <div className="col-span-full py-12 text-center text-gray-500 border-2 border-dashed border-pink-100 rounded-2xl bg-pink-50/20">
+                      <div className="col-span-full py-12 text-center text-gray-500 border-2 border-dashed border-pink-100 rounded-sm bg-pink-50/20">
                         <MapPin className="w-12 h-12 text-pink-200 mx-auto mb-4" />
                         <p>No addresses saved yet</p>
                       </div>
@@ -360,12 +360,12 @@ export function ProfilePage() {
                       user.addresses?.map((addr) => (
                         <div 
                           key={addr._id} 
-                          className={`relative p-5 rounded-2xl border transition-all ${
+                          className={`relative p-5 rounded-sm border transition-all ${
                             addr.isDefault ? 'border-pink-500 bg-pink-50/30' : 'border-gray-100 bg-white hover:border-pink-200'
                           }`}
                         >
                           {addr.isDefault && (
-                            <span className="absolute top-4 right-4 flex items-center gap-1 bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                            <span className="absolute top-4 right-4 flex items-center gap-1 bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm">
                               <CheckCircle2 className="w-2.5 h-2.5" />
                               Default
                             </span>
@@ -404,8 +404,8 @@ export function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-transparent hover:border-pink-50 p-8 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-all group lg:hidden" onClick={() => navigate('/orders')}>
-                  <div className="bg-pink-100 p-4 rounded-full mb-4 group-hover:bg-pink-200 transition-colors">
+                <div className="bg-white rounded-sm shadow-sm border border-transparent hover:border-pink-50 p-8 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-all group lg:hidden" onClick={() => navigate('/orders')}>
+                  <div className="bg-pink-100 p-4 rounded-sm mb-4 group-hover:bg-pink-200 transition-colors">
                     <Package className="w-8 h-8 text-pink-600" />
                   </div>
                   <h3 className="text-xl font-medium text-gray-800 mb-2">My Orders</h3>

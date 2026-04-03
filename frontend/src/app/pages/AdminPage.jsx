@@ -195,14 +195,14 @@ export function AdminPage() {
         <nav className="flex-1 px-4 space-y-1">
           <button 
             onClick={() => { setActiveTab('products'); setSelectedOrder(null); }}
-            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'products' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-sm transition-all ${activeTab === 'products' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             <Package className="w-5 h-5 mr-3" />
             Product Catalog
           </button>
           <button 
             onClick={() => setActiveTab('orders')}
-            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${activeTab === 'orders' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-sm transition-all ${activeTab === 'orders' ? 'bg-pink-50 text-pink-600' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             <ShoppingBag className="w-5 h-5 mr-3" />
             Orders Management
@@ -210,8 +210,8 @@ export function AdminPage() {
         </nav>
 
         <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center p-3 rounded-xl bg-gray-50">
-            <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs">
+          <div className="flex items-center p-3 rounded-sm bg-gray-50">
+            <div className="w-8 h-8 rounded-sm bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs">
               {user.name?.[0] || 'A'}
             </div>
             <div className="ml-3 flex-1 overflow-hidden">
@@ -236,7 +236,7 @@ export function AdminPage() {
             <p className="text-gray-500 mt-1">Manage your store operations and real-time data.</p>
           </div>
           <div className="flex gap-4">
-            <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
+            <div className="px-4 py-2 bg-white rounded-sm shadow-sm border border-gray-100 flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-green-500" />
               <div>
                 <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Live Status</p>
@@ -250,7 +250,7 @@ export function AdminPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Add/Edit Form */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+              <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 sticky top-8">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-bold text-gray-900">{editingId ? 'Edit Product' : 'Add New Item'}</h3>
                   {editingId && (
@@ -267,7 +267,7 @@ export function AdminPage() {
                       value={formData.title} 
                       onChange={(e) => setFormData({...formData, title: e.target.value})} 
                       required 
-                      className="rounded-xl border-gray-200 focus:ring-pink-200"
+                      className="rounded-sm border-gray-200 focus:ring-pink-200"
                     />
                   </div>
                   <div className="space-y-1">
@@ -276,23 +276,23 @@ export function AdminPage() {
                       value={formData.description} 
                       onChange={(e) => setFormData({...formData, description: e.target.value})} 
                       required 
-                      className="rounded-xl border-gray-200 focus:ring-pink-200 min-h-[100px]"
+                      className="rounded-sm border-gray-200 focus:ring-pink-200 min-h-[100px]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Price (₹)</Label>
-                      <Input value={formData.price} type="number" onChange={(e)=>setFormData({...formData, price:e.target.value})} required className="rounded-xl border-gray-200" />
+                      <Input value={formData.price} type="number" onChange={(e)=>setFormData({...formData, price:e.target.value})} required className="rounded-sm border-gray-200" />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Stock</Label>
-                      <Input value={formData.stock} type="number" onChange={(e)=>setFormData({...formData, stock:e.target.value})} required className="rounded-xl border-gray-200" />
+                      <Input value={formData.stock} type="number" onChange={(e)=>setFormData({...formData, stock:e.target.value})} required className="rounded-sm border-gray-200" />
                     </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Category</Label>
                     <Select value={formData.type} onValueChange={(v)=>setFormData({...formData, type:v})} required>
-                      <SelectTrigger className="rounded-xl border-gray-200"><SelectValue placeholder="Select type" /></SelectTrigger>
+                      <SelectTrigger className="rounded-sm border-gray-200"><SelectValue placeholder="Select type" /></SelectTrigger>
                       <SelectContent className="bg-white">
                         {['Hair pin','Banana clips','Clutches','Clips','Hair band','Party wear','Centre clip'].map(t=>(
                           <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -302,7 +302,7 @@ export function AdminPage() {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs font-bold text-gray-400 uppercase ml-1">Product Visual</Label>
-                    <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all overflow-hidden relative group">
+                    <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-gray-200 rounded-sm cursor-pointer hover:bg-gray-50 transition-all overflow-hidden relative group">
                       {preview ? (
                         <img src={preview} className="w-full h-full object-cover" />
                       ) : (
@@ -315,7 +315,7 @@ export function AdminPage() {
                       {preview && <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Pencil className="w-5 h-5 text-white" /></div>}
                     </label>
                   </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold h-12">
+                  <Button type="submit" disabled={isSubmitting} className="w-full rounded-sm bg-pink-600 hover:bg-pink-700 text-white font-bold h-12">
                     {isSubmitting ? 'Syncing...' : (editingId ? 'Update Product' : 'Add to Collection')}
                   </Button>
                 </form>
@@ -324,10 +324,10 @@ export function AdminPage() {
 
             {/* List Column */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-50 flex justify-between items-center">
                   <h3 className="font-bold text-gray-900">Live Catalog</h3>
-                  <span className="text-[10px] bg-gray-100 text-gray-500 px-3 py-1 rounded-full font-bold uppercase">{products.length} Items</span>
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-3 py-1 rounded-sm font-bold uppercase">{products.length} Items</span>
                 </div>
                 
                 {loading ? (
@@ -336,7 +336,7 @@ export function AdminPage() {
                   <div className="divide-y divide-gray-50">
                     {products.map((p) => (
                       <div key={p._id} className="p-4 hover:bg-gray-50 transition-colors flex items-center group">
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0">
+                        <div className="w-16 h-16 rounded-sm overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0">
                           <img src={p.image} className="w-full h-full object-cover" />
                         </div>
                         <div className="ml-4 flex-1">
@@ -368,14 +368,14 @@ export function AdminPage() {
                 <button
                   key={status}
                   onClick={() => setActiveStatusTab(status)}
-                  className={`px-6 py-3 rounded-2xl whitespace-nowrap text-xs font-bold uppercase transition-all border ${
+                  className={`px-6 py-3 rounded-sm whitespace-nowrap text-xs font-bold uppercase transition-all border ${
                     activeStatusTab === status 
                     ? 'bg-pink-600 text-white border-pink-600 shadow-lg shadow-pink-100' 
                     : 'bg-white text-gray-400 border-gray-100 hover:border-pink-200 hover:text-pink-600'
                   }`}
                 >
                   {status}
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] ${
+                  <span className={`ml-2 px-2 py-0.5 rounded-sm text-[10px] ${
                     activeStatusTab === status ? 'bg-white/20 text-white' : 'bg-gray-50 text-gray-400'
                   }`}>
                     {getStatusCount(status)}
@@ -384,7 +384,7 @@ export function AdminPage() {
               ))}
             </div>
 
-            <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${selectedOrder ? 'hidden' : 'block'}`}>
+            <div className={`bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden ${selectedOrder ? 'hidden' : 'block'}`}>
                <div className="p-6 border-b border-gray-50 flex justify-between items-center">
                   <h3 className="font-bold text-gray-900 capitalize">{activeStatusTab} Orders</h3>
                   <p className="text-xs text-gray-400">Total: {filteredOrders.length}</p>
@@ -418,10 +418,10 @@ export function AdminPage() {
                           <td className="px-6 py-5">
                              <div className="flex -space-x-2">
                                {o.items?.slice(0, 3).map((item, i) => (
-                                 <img key={i} src={item.image} className="w-7 h-7 rounded-full border-2 border-white object-cover shadow-sm bg-gray-100" />
+                                 <img key={i} src={item.image} className="w-7 h-7 rounded-sm border-2 border-white object-cover shadow-sm bg-gray-100" />
                                ))}
                                {o.items?.length > 3 && (
-                                 <div className="w-7 h-7 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400 shadow-sm">+{o.items.length - 3}</div>
+                                 <div className="w-7 h-7 rounded-sm border-2 border-white bg-gray-100 flex items-center justify-center text-[8px] font-bold text-gray-400 shadow-sm">+{o.items.length - 3}</div>
                                )}
                              </div>
                           </td>
@@ -429,7 +429,7 @@ export function AdminPage() {
                           <td className="px-6 py-5 text-right flex items-center justify-end gap-2">
                              <button 
                                onClick={() => setSelectedOrder(o)}
-                               className="p-2 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all"
+                               className="p-2 text-gray-400 hover:text-pink-600 hover:bg-pink-50 rounded-sm transition-all"
                                title="View Detail"
                              >
                                 <Eye className="w-5 h-5" />
@@ -438,18 +438,18 @@ export function AdminPage() {
                              {/* FSM Buttons */}
                              {o.orderStatus === 'placed' && (
                                <div className="flex gap-2">
-                                 <button onClick={() => handleStatusUpdate(o._id, 'processing')} className="px-3 py-1.5 bg-pink-50 text-pink-600 rounded-lg text-[10px] font-bold uppercase hover:bg-pink-100 transition-colors">Process</button>
-                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'processing')} className="px-3 py-1.5 bg-pink-50 text-pink-600 rounded-sm text-[10px] font-bold uppercase hover:bg-pink-100 transition-colors">Process</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-sm text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
                                </div>
                              )}
                              {o.orderStatus === 'processing' && (
                                <div className="flex gap-2">
-                                 <button onClick={() => handleStatusUpdate(o._id, 'shipped')} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase hover:bg-blue-100 transition-colors">Ship Order</button>
-                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'shipped')} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-sm text-[10px] font-bold uppercase hover:bg-blue-100 transition-colors">Ship Order</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-sm text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
                                </div>
                              )}
                              {o.orderStatus === 'shipped' && (
-                               <button onClick={() => handleStatusUpdate(o._id, 'delivered')} className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-[10px] font-bold uppercase hover:bg-green-100 transition-colors">Mark Delivered</button>
+                               <button onClick={() => handleStatusUpdate(o._id, 'delivered')} className="px-3 py-1.5 bg-green-50 text-green-600 rounded-sm text-[10px] font-bold uppercase hover:bg-green-100 transition-colors">Mark Delivered</button>
                              )}
                              {(o.orderStatus === 'delivered' || o.orderStatus === 'cancelled') && (
                                <span className="text-[10px] text-gray-300 font-bold uppercase mr-2">Archive</span>
@@ -467,10 +467,10 @@ export function AdminPage() {
 
             {/* Detail View Section */}
             {selectedOrder && (
-              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
+              <div className="bg-white rounded-sm shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
                 <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-900 text-white">
                   <div className="flex items-center gap-4">
-                    <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                    <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-white/10 rounded-sm transition-colors">
                        <X className="w-5 h-5" />
                     </button>
                     <div>
@@ -478,7 +478,7 @@ export function AdminPage() {
                       <p className="text-[10px] opacity-70 uppercase tracking-widest">{selectedOrder.orderNumber}</p>
                     </div>
                   </div>
-                  <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(selectedOrder.orderStatus)} border-opacity-20`}>
+                  <div className={`px-4 py-1 rounded-sm text-[10px] font-bold uppercase border ${getStatusColor(selectedOrder.orderStatus)} border-opacity-20`}>
                     {selectedOrder.orderStatus}
                   </div>
                 </div>
@@ -490,10 +490,10 @@ export function AdminPage() {
                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                          <Package className="w-4 h-4 mr-2" /> Line Items
                        </h4>
-                       <div className="bg-gray-50 rounded-2xl p-4 divide-y divide-gray-100">
+                       <div className="bg-gray-50 rounded-sm p-4 divide-y divide-gray-100">
                          {selectedOrder.items?.map((item, idx) => (
                            <div key={idx} className="py-4 flex items-center">
-                              <img src={item.image} className="w-16 h-16 rounded-xl object-cover bg-white" />
+                              <img src={item.image} className="w-16 h-16 rounded-sm object-cover bg-white" />
                               <div className="ml-4 flex-1">
                                 <p className="text-sm font-bold text-gray-900">{item.name}</p>
                                 <p className="text-xs text-gray-500">₹{item.price} x {item.quantity}</p>
@@ -506,7 +506,7 @@ export function AdminPage() {
                        </div>
                      </div>
 
-                     <div className="flex justify-between items-center p-6 bg-pink-50 rounded-2xl border border-pink-100">
+                     <div className="flex justify-between items-center p-6 bg-pink-50 rounded-sm border border-pink-100">
                         <span className="text-sm font-bold text-pink-900 uppercase">Total Transaction Value</span>
                         <span className="text-2xl font-serif font-bold text-pink-600">₹{selectedOrder.totalAmount}</span>
                      </div>
@@ -515,7 +515,7 @@ export function AdminPage() {
                   {/* Right Column: Customer/Shipping/Payment */}
                   <div className="space-y-8">
                     {/* Customer */}
-                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                     <div className="p-6 bg-white rounded-sm border border-gray-100 shadow-sm">
                       <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                          <User className="w-4 h-4 mr-2" /> Customer Info
                       </h4>
@@ -525,7 +525,7 @@ export function AdminPage() {
                     </div>
 
                     {/* Shipping */}
-                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="p-6 bg-white rounded-sm border border-gray-100 shadow-sm">
                       <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                          <MapPin className="w-4 h-4 mr-2" /> Shipping Target
                       </h4>
@@ -539,7 +539,7 @@ export function AdminPage() {
                     </div>
 
                     {/* Payment */}
-                    <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="p-6 bg-white rounded-sm border border-gray-100 shadow-sm">
                       <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                          <CreditCard className="w-4 h-4 mr-2" /> Payment Logic
                       </h4>
@@ -556,21 +556,21 @@ export function AdminPage() {
                       <div className="flex flex-col gap-2">
                          {selectedOrder.orderStatus === 'placed' && (
                            <>
-                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'processing')} className="w-full h-12 rounded-xl bg-pink-600 text-white font-bold">Move to Processing</Button>
-                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-xl border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'processing')} className="w-full h-12 rounded-sm bg-pink-600 text-white font-bold">Move to Processing</Button>
+                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-sm border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
                            </>
                          )}
                          {selectedOrder.orderStatus === 'processing' && (
                            <>
-                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'shipped')} className="w-full h-12 rounded-xl bg-blue-600 text-white font-bold">Ship Order</Button>
-                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-xl border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'shipped')} className="w-full h-12 rounded-sm bg-blue-600 text-white font-bold">Ship Order</Button>
+                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-sm border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
                            </>
                          )}
                          {selectedOrder.orderStatus === 'shipped' && (
-                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'delivered')} className="w-full h-12 rounded-xl bg-green-600 text-white font-bold">Mark as Delivered</Button>
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'delivered')} className="w-full h-12 rounded-sm bg-green-600 text-white font-bold">Mark as Delivered</Button>
                          )}
                          {(selectedOrder.orderStatus === 'delivered' || selectedOrder.orderStatus === 'cancelled') && (
-                            <div className="p-4 bg-gray-50 rounded-xl text-center text-xs font-bold text-gray-400 uppercase">This transaction is completed</div>
+                            <div className="p-4 bg-gray-50 rounded-sm text-center text-xs font-bold text-gray-400 uppercase">This transaction is completed</div>
                          )}
                       </div>
                     </div>
