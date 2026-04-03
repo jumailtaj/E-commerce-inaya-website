@@ -46,7 +46,7 @@ exports.createOrder = async (req, res) => {
       totalAmount += price * item.quantity;
 
       orderItems.push({
-        productId: product._id,
+        product: product._id,
         name: product.title,
         price: price,
         image: product.image,
@@ -135,11 +135,12 @@ exports.verifyPayment = async (req, res) => {
       const order = await Order.findById(payment.order);
       order.paymentStatus = 'paid';
       order.orderStatus = 'placed';
+      order.statusHistory.push({ status: 'placed' });
       await order.save();
 
       // 3. Deduct stock atomically
       for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.productId, {
+        await Product.findByIdAndUpdate(item.product, {
           $inc: { stock: -item.quantity, inventory: -item.quantity }
         });
       }
@@ -212,10 +213,11 @@ exports.handleWebhook = async (req, res) => {
           if (order && order.paymentStatus === 'pending') {
             order.paymentStatus = 'paid';
             order.orderStatus = 'placed';
+            order.statusHistory.push({ status: 'placed' });
             await order.save();
 
             for (const item of order.items) {
-              await Product.findByIdAndUpdate(item.productId, {
+              await Product.findByIdAndUpdate(item.product, {
                 $inc: { stock: -item.quantity, inventory: -item.quantity }
               });
             }

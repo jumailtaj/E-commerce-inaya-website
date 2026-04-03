@@ -48,15 +48,15 @@ const getAdminOrderById = async (req, res) => {
   }
 };
 
-// @desc    Update order status
+// @desc    Update order status with strict FSM transitions
 // @route   PUT /api/admin/orders/:id/status
 // @access  Private/Admin
 const updateOrderStatus = async (req, res) => {
-  const { status } = req.body;
-  const allowedStatus = ['pending', 'placed', 'processing', 'shipped', 'delivered', 'cancelled'];
+  const { status: newStatus } = req.body;
+  const validStatuses = ['placed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
-  if (!allowedStatus.includes(status)) {
-    return res.status(400).json({ message: 'Invalid status transition' });
+  if (!validStatuses.includes(newStatus)) {
+    return res.status(400).json({ message: 'Invalid status target' });
   }
 
   try {
@@ -66,15 +66,42 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Example validation logic: cannot un-cancel
-    if (order.orderStatus === 'cancelled' && status !== 'cancelled') {
-        return res.status(400).json({ message: 'Cannot re-open a cancelled order' });
+    const currentStatus = order.orderStatus;
+
+    // 1. Definition of valid transitions (FSM Engine)
+    const transitionRules = {
+      'pending': ['placed', 'cancelled'], // Pending can only move after payment or if timed out/failed
+      'placed': ['processing', 'cancelled'],
+      'processing': ['shipped', 'cancelled'],
+      'shipped': ['delivered'],
+      'delivered': [], // Final State
+      'cancelled': []  // Final State
+    };
+
+    // 2. Validate move
+    const allowed = transitionRules[currentStatus] || [];
+    if (!allowed.includes(newStatus)) {
+      return res.status(400).json({ 
+        message: `Invalid transition: Cannot move order from ${currentStatus} to ${newStatus}` 
+      });
     }
 
-    order.orderStatus = status;
+    // 3. Side Effects: Stock Restoration on Cancellation
+    if (newStatus === 'cancelled' && currentStatus !== 'cancelled') {
+        const Product = require('../models/product');
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(item.product, {
+                $inc: { stock: item.quantity, inventory: item.quantity }
+            });
+        }
+    }
+
+    // 4. Persistence
+    order.orderStatus = newStatus;
+    order.statusHistory.push({ status: newStatus });
     await order.save();
 
-    res.json({ message: `Order status updated to ${status}`, order });
+    res.json({ message: `Order lifecycle updated to ${newStatus}`, order });
   } catch (error) {
     console.error('[updateOrderStatus]', error.code, error.message);
     res.status(500).json({ message: 'Server error', error: error.message });

@@ -164,7 +164,7 @@ export function OrderHistoryPage() {
                           variant="ghost" 
                           size="icon" 
                           className="text-pink-200 hover:text-pink-600 hover:bg-pink-50 rounded-full"
-                          onClick={() => navigate(`/product/${item.productId}`)}
+                          onClick={() => navigate(`/product/${item.product}`)}
                         >
                           <ChevronRight className="w-5 h-5" />
                         </Button>

@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema({
   },
   items: [
     {
-      productId: {
+      product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
@@ -45,6 +45,12 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'placed', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
+  statusHistory: [
+    {
+      status: String,
+      timestamp: { type: Date, default: Date.now }
+    }
+  ],
   paymentStatus: {
     type: String, // Mirror for easy display
     enum: ['pending', 'paid', 'failed'],
@@ -56,15 +62,22 @@ const orderSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Pre-save to generate a human-unique Order ID (e.g. INY-1712034567)
-orderSchema.pre('validate', function(next) {
+// Pre-save to generate a human-unique Order ID (e.g. INY-1712034567-456)
+orderSchema.pre('save', function(next) {
   if (!this.orderNumber) {
     this.orderNumber = 'INY-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100);
   }
+  
+  // Initialize statusHistory if empty
+  if (this.isNew && this.orderStatus) {
+    this.statusHistory.push({ status: this.orderStatus });
+  }
+  
   next();
 });
 
 orderSchema.index({ user: 1 });
+orderSchema.index({ orderStatus: 1, createdAt: -1 });
 orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Order', orderSchema);

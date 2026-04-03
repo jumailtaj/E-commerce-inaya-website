@@ -23,6 +23,7 @@ export function AdminPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [activeStatusTab, setActiveStatusTab] = useState('placed');
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -164,8 +165,19 @@ export function AdminPage() {
       case 'shipped': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'cancelled': return 'bg-red-100 text-red-700 border-red-200';
       case 'processing': return 'bg-purple-100 text-purple-700 border-purple-200';
-      default: return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'placed': return 'bg-orange-100 text-orange-700 border-orange-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
+  };
+
+  const orderStatuses = ['placed', 'processing', 'shipped', 'delivered', 'cancelled'];
+  
+  const filteredOrders = Array.isArray(orders) 
+    ? orders.filter(o => o.orderStatus === activeStatusTab)
+    : [];
+
+  const getStatusCount = (status) => {
+    return Array.isArray(orders) ? orders.filter(o => o.orderStatus === status).length : 0;
   };
 
   if (authLoading) return <div className="min-h-screen flex items-center justify-center">Verifying admin...</div>;
@@ -350,14 +362,37 @@ export function AdminPage() {
 
         {activeTab === 'orders' && (
           <div className="space-y-6 relative">
+            {/* Pipeline Tabs */}
+            <div className={`flex gap-2 overflow-x-auto pb-2 scrollbar-hide ${selectedOrder ? 'hidden' : 'flex'}`}>
+              {orderStatuses.map(status => (
+                <button
+                  key={status}
+                  onClick={() => setActiveStatusTab(status)}
+                  className={`px-6 py-3 rounded-2xl whitespace-nowrap text-xs font-bold uppercase transition-all border ${
+                    activeStatusTab === status 
+                    ? 'bg-pink-600 text-white border-pink-600 shadow-lg shadow-pink-100' 
+                    : 'bg-white text-gray-400 border-gray-100 hover:border-pink-200 hover:text-pink-600'
+                  }`}
+                >
+                  {status}
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] ${
+                    activeStatusTab === status ? 'bg-white/20 text-white' : 'bg-gray-50 text-gray-400'
+                  }`}>
+                    {getStatusCount(status)}
+                  </span>
+                </button>
+              ))}
+            </div>
+
             <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ${selectedOrder ? 'hidden' : 'block'}`}>
-               <div className="p-6 border-b border-gray-50">
-                  <h3 className="font-bold text-gray-900">Recent Transactions</h3>
+               <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+                  <h3 className="font-bold text-gray-900 capitalize">{activeStatusTab} Orders</h3>
+                  <p className="text-xs text-gray-400">Total: {filteredOrders.length}</p>
                </div>
 
                {loading ? (
                  <div className="p-20 text-center text-pink-500">Syncing orders...</div>
-               ) : Array.isArray(orders) && orders.length > 0 ? (
+               ) : filteredOrders.length > 0 ? (
                  <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead className="bg-gray-50">
@@ -366,12 +401,11 @@ export function AdminPage() {
                           <th className="px-6 py-4">Customer</th>
                           <th className="px-6 py-4">Items</th>
                           <th className="px-6 py-4">Total</th>
-                          <th className="px-6 py-4">Status</th>
-                          <th className="px-6 py-4 text-right">Action</th>
+                          <th className="px-6 py-4 text-right">Update Stage</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50">
-                        {orders.map((o) => (
+                        {filteredOrders.map((o) => (
                         <tr key={o._id} className="hover:bg-gray-50/50 transition-colors">
                           <td className="px-6 py-5">
                             <span className="block text-xs font-bold text-gray-900">{o.orderNumber || o._id.slice(-8).toUpperCase()}</span>
@@ -379,7 +413,7 @@ export function AdminPage() {
                           </td>
                           <td className="px-6 py-5 text-sm font-medium text-gray-900">
                              {o.user?.name || o.shippingAddress?.fullName}
-                             <span className="block text-[10px] text-gray-400">{o.user?.email}</span>
+                             <span className="block text-[10px] text-gray-400">{o.user?.email || o.shippingAddress?.phone}</span>
                           </td>
                           <td className="px-6 py-5">
                              <div className="flex -space-x-2">
@@ -392,11 +426,6 @@ export function AdminPage() {
                              </div>
                           </td>
                           <td className="px-6 py-5 text-sm font-bold text-gray-900">₹{o.totalAmount}</td>
-                          <td className="px-6 py-5">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(o.orderStatus)}`}>
-                              {o.orderStatus}
-                            </span>
-                          </td>
                           <td className="px-6 py-5 text-right flex items-center justify-end gap-2">
                              <button 
                                onClick={() => setSelectedOrder(o)}
@@ -405,19 +434,26 @@ export function AdminPage() {
                              >
                                 <Eye className="w-5 h-5" />
                              </button>
-                             <Select 
-                               value={o.orderStatus} 
-                               onValueChange={(v) => handleStatusUpdate(o._id, v)}
-                             >
-                                <SelectTrigger className="w-28 h-8 rounded-lg border-gray-100 bg-white text-[10px] font-bold shadow-none">
-                                   <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white">
-                                   {['placed', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
-                                     <SelectItem key={s} value={s} className="text-xs capitalize">{s}</SelectItem>
-                                   ))}
-                                </SelectContent>
-                             </Select>
+                             
+                             {/* FSM Buttons */}
+                             {o.orderStatus === 'placed' && (
+                               <div className="flex gap-2">
+                                 <button onClick={() => handleStatusUpdate(o._id, 'processing')} className="px-3 py-1.5 bg-pink-50 text-pink-600 rounded-lg text-[10px] font-bold uppercase hover:bg-pink-100 transition-colors">Process</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
+                               </div>
+                             )}
+                             {o.orderStatus === 'processing' && (
+                               <div className="flex gap-2">
+                                 <button onClick={() => handleStatusUpdate(o._id, 'shipped')} className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase hover:bg-blue-100 transition-colors">Ship Order</button>
+                                 <button onClick={() => handleStatusUpdate(o._id, 'cancelled')} className="px-3 py-1.5 bg-gray-50 text-gray-400 rounded-lg text-[10px] font-bold uppercase hover:bg-red-50 hover:text-red-500 transition-colors">Cancel</button>
+                               </div>
+                             )}
+                             {o.orderStatus === 'shipped' && (
+                               <button onClick={() => handleStatusUpdate(o._id, 'delivered')} className="px-3 py-1.5 bg-green-50 text-green-600 rounded-lg text-[10px] font-bold uppercase hover:bg-green-100 transition-colors">Mark Delivered</button>
+                             )}
+                             {(o.orderStatus === 'delivered' || o.orderStatus === 'cancelled') && (
+                               <span className="text-[10px] text-gray-300 font-bold uppercase mr-2">Archive</span>
+                             )}
                           </td>
                         </tr>
                         ))}
@@ -425,7 +461,7 @@ export function AdminPage() {
                     </table>
                  </div>
                ) : (
-                 <div className="p-20 text-center text-gray-400">No orders found yet. Keep marketing!</div>
+                 <div className="p-20 text-center text-gray-400">No {activeStatusTab} orders yet.</div>
                )}
             </div>
 
@@ -517,19 +553,26 @@ export function AdminPage() {
                     {/* Quick Update */}
                     <div className="space-y-3">
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Process Order</p>
-                      <Select 
-                         value={selectedOrder.orderStatus} 
-                         onValueChange={(v) => handleStatusUpdate(selectedOrder._id, v)}
-                       >
-                          <SelectTrigger className="w-full h-12 rounded-xl border-pink-100 bg-pink-50 text-pink-600 font-bold">
-                             <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white">
-                             {['placed', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
-                               <SelectItem key={s} value={s} className="text-xs capitalize">{s}</SelectItem>
-                             ))}
-                          </SelectContent>
-                       </Select>
+                      <div className="flex flex-col gap-2">
+                         {selectedOrder.orderStatus === 'placed' && (
+                           <>
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'processing')} className="w-full h-12 rounded-xl bg-pink-600 text-white font-bold">Move to Processing</Button>
+                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-xl border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
+                           </>
+                         )}
+                         {selectedOrder.orderStatus === 'processing' && (
+                           <>
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'shipped')} className="w-full h-12 rounded-xl bg-blue-600 text-white font-bold">Ship Order</Button>
+                            <Button variant="outline" onClick={() => handleStatusUpdate(selectedOrder._id, 'cancelled')} className="w-full h-12 rounded-xl border-gray-200 text-gray-500 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-100">Cancel Order</Button>
+                           </>
+                         )}
+                         {selectedOrder.orderStatus === 'shipped' && (
+                            <Button onClick={() => handleStatusUpdate(selectedOrder._id, 'delivered')} className="w-full h-12 rounded-xl bg-green-600 text-white font-bold">Mark as Delivered</Button>
+                         )}
+                         {(selectedOrder.orderStatus === 'delivered' || selectedOrder.orderStatus === 'cancelled') && (
+                            <div className="p-4 bg-gray-50 rounded-xl text-center text-xs font-bold text-gray-400 uppercase">This transaction is completed</div>
+                         )}
+                      </div>
                     </div>
                   </div>
                 </div>
