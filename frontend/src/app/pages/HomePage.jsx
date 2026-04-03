@@ -7,7 +7,7 @@ import api from '../../api/axios';
 export function HomePage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get('search');
-  
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('All');
@@ -35,7 +35,7 @@ export function HomePage() {
         }
         const response = await api.get('/products', { params });
         const productsList = response.data.products || (Array.isArray(response.data) ? response.data : null);
-        
+
         if (productsList && productsList.length > 0) {
           setProducts(productsList);
         } else {
@@ -57,17 +57,16 @@ export function HomePage() {
       <div id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-2xl font-serif text-gray-800">Our Products</h2>
-          
+
           <div className="flex flex-wrap gap-2">
             {types.map((type) => (
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  selectedType === type
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${selectedType === type
                     ? 'bg-pink-600 text-white shadow-md'
                     : 'bg-white text-gray-600 hover:bg-pink-50 border border-pink-100'
-                }`}
+                  }`}
               >
                 {type}
               </button>
@@ -81,8 +80,8 @@ export function HomePage() {
               <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm animate-pulse">
                 <div className="aspect-square bg-gray-200"></div>
                 <div className="p-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-4 bg-gray-200 w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 w-1/4"></div>
                 </div>
               </div>
             ))
@@ -92,7 +91,7 @@ export function HomePage() {
             ))
           ) : (
             <div className="col-span-full py-20 text-center bg-white rounded-3xl border-2 border-dashed border-pink-100">
-               <p className="text-gray-400 italic">No products found matching your selection.</p>
+              <p className="text-gray-400 italic">No products found matching your selection.</p>
             </div>
           )}
         </div>
