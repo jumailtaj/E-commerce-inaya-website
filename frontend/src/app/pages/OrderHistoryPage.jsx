@@ -1,35 +1,39 @@
 import api from '../../api/axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
-import { ShoppingBag, Package, Calendar, MapPin, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Package, Calendar, MapPin, ChevronRight, RefreshCw } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
+
 export function OrderHistoryPage() {
   const { isAuthenticated } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
 
+  const fetchOrders = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const response = await api.get('/orders/my-orders');
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await api.get('/orders/my-orders');
-        setOrders(response.data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
     if (isAuthenticated) {
       fetchOrders();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchOrders]);
 
   if (!isAuthenticated) {
     return (
@@ -62,9 +66,21 @@ export function OrderHistoryPage() {
             <h1 className="text-3xl font-serif text-gray-800">Your Orders</h1>
             <p className="text-gray-500">Track and manage your recent purchases</p>
           </div>
-          <Badge variant="outline" className="bg-white text-pink-600 border-pink-100 rounded-full px-4 py-1.5 shadow-sm">
-            {orders.length} {orders.length === 1 ? 'Order' : 'Orders'}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => fetchOrders(true)} 
+              disabled={refreshing}
+              className="rounded-full border-pink-100 text-pink-600 hover:bg-pink-50 flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Badge variant="outline" className="bg-white text-pink-600 border-pink-100 rounded-full px-4 py-1.5 shadow-sm">
+              {orders.length} {orders.length === 1 ? 'Order' : 'Orders'}
+            </Badge>
+          </div>
         </div>
 
         {orders.length === 0 ? (
@@ -107,18 +123,18 @@ export function OrderHistoryPage() {
                   </div>
                   <div className="text-right hidden sm:block">
                     <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Order ID</p>
-                    <p className="text-[10px] font-mono font-medium text-gray-400">#{order.razorpayOrderId.slice(-8)}</p>
+                    <p className="text-[10px] font-mono font-medium text-gray-400">#{order.orderNumber || order._id.slice(-8).toUpperCase()}</p>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
                   {/* Status Badges */}
                   <div className="flex items-center gap-4 mb-8">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider ${
-                      order.paymentStatus === 'completed' 
+                      order.paymentStatus === 'paid' 
                         ? 'bg-green-50 border-green-100 text-green-600' 
                         : 'bg-yellow-50 border-yellow-100 text-yellow-600'
                     }`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${order.paymentStatus === 'completed' ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full ${order.paymentStatus === 'paid' ? 'bg-green-500' : 'bg-yellow-500'}`} />
                       {order.paymentStatus}
                     </div>
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-100 text-pink-600 text-[11px] font-bold uppercase tracking-wider">
@@ -134,13 +150,13 @@ export function OrderHistoryPage() {
                         <div className="w-20 h-20 rounded-lg overflow-hidden bg-pink-50 border border-pink-50 flex-shrink-0">
                           <img
                           src={item.image || '/placeholder.png'}
-                          alt={item.title}
+                          alt={item.name}
                           className="w-16 h-16 object-cover rounded-lg border border-pink-50"
                           onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
                         />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-800 line-clamp-1">{item.product?.title}</h4>
+                          <h4 className="font-medium text-gray-800 line-clamp-1">{item.name}</h4>
                           <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                           <p className="text-sm font-medium text-pink-600">₹{item.price.toFixed(2)}</p>
                         </div>
@@ -148,7 +164,7 @@ export function OrderHistoryPage() {
                           variant="ghost" 
                           size="icon" 
                           className="text-pink-200 hover:text-pink-600 hover:bg-pink-50 rounded-full"
-                          onClick={() => navigate(`/product/${item.product?._id}`)}
+                          onClick={() => navigate(`/product/${item.productId}`)}
                         >
                           <ChevronRight className="w-5 h-5" />
                         </Button>

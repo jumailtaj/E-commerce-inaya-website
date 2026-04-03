@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
-    unique: true
+    unique: true,
+    sparse: true
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -58,7 +59,7 @@ const orderSchema = new mongoose.Schema({
 // Pre-save to generate a human-unique Order ID (e.g. INY-1712034567)
 orderSchema.pre('validate', function(next) {
   if (!this.orderNumber) {
-    this.orderNumber = 'INY-' + Math.floor(Date.now() / 1000);
+    this.orderNumber = 'INY-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100);
   }
   next();
 });
