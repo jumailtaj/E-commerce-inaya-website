@@ -92,8 +92,8 @@ export function HomePage() {
                 </div>
               ))
             ) : products.length > 0 ? (
-              products.map((product) => (
-                <ProductCard key={product.id || product._id} product={product} />
+              products.map((product, i) => (
+                <ProductCard key={product.id || product._id} product={product} priority={i === 0 || i === 1} />
               ))
             ) : (
               <div className="col-span-full py-20 text-center bg-white rounded-sm border-2 border-dashed border-pink-100">

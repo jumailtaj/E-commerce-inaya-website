@@ -44,19 +44,19 @@ export function ProductDetailPage() {
   useEffect(() => {
     const fetchSimilarProducts = async () => {
       if (!product?.type) return;
-      
+
       setSimilarLoading(true);
       try {
         const response = await api.get('/products', {
           params: { type: product.type, limit: 10 }
         });
         const productsList = response.data.products || (Array.isArray(response.data) ? response.data : []);
-        
+
         // Filter out current product and limit to 4
         const filtered = productsList
           .filter(p => (p._id || p.id) !== (product._id || product.id))
           .slice(0, 4);
-        
+
         setSimilarProducts(filtered);
       } catch (error) {
         console.error('Error fetching similar products:', error);
@@ -103,12 +103,20 @@ export function ProductDetailPage() {
   };
 
   // Prepare images array
-  const images = product.images && product.images.length > 0 
-    ? product.images 
+  const images = product.images && product.images.length > 0
+    ? product.images
     : [product.image];
 
   return (
     <div className="min-h-screen bg-white pb-20">
+      <Helmet>
+        <title>{product.title || product.name} — Inaya</title>
+        <meta name="description" content={`Shop ${product.title || product.name} at Inaya. ${product.description?.slice(0, 120)}...`} />
+        <meta property="og:title" content={`${product.title || product.name} — Inaya`} />
+        <meta property="og:description" content={`Shop ${product.title || product.name} at Inaya. Premium hair accessories delivered across India.`} />
+        <meta property="og:image" content={product.image} />
+        <meta property="og:url" content={`https://inayastore.vercel.app/product/${product._id || product.id}`} />
+      </Helmet>
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Back Button */}
         <button
@@ -121,10 +129,10 @@ export function ProductDetailPage() {
 
         {/* Product Layout - Strict 45/55 Split */}
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-12">
-          
+
           {/* LEFT: Image Section (45% Width on Desktop) */}
           <div className="lg:w-[45%] flex flex-col md:flex-row gap-4">
-            
+
             {/* Desktop Thumbnails (Vertical on the LEFT) */}
             {images.length > 1 && (
               <div className="hidden md:flex flex-col gap-3 w-[80px] shrink-0">
@@ -132,11 +140,10 @@ export function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    className={`w-[70px] h-[70px] rounded-sm overflow-hidden border-2 transition-all hover:scale-105 ${
-                      selectedImage === img 
-                        ? 'border-pink-500 shadow-md ring-2 ring-pink-50' 
+                    className={`w-[70px] h-[70px] rounded-sm overflow-hidden border-2 transition-all hover:scale-105 ${selectedImage === img
+                        ? 'border-pink-500 shadow-md ring-2 ring-pink-50'
                         : 'border-gray-100 hover:border-pink-200'
-                    }`}
+                      }`}
                   >
                     <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
@@ -163,11 +170,10 @@ export function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    className={`h-16 w-16 shrink-0 rounded-sm overflow-hidden border-2 transition-all ${
-                      selectedImage === img 
-                        ? 'border-pink-500 shadow-md scale-105' 
+                    className={`h-16 w-16 shrink-0 rounded-sm overflow-hidden border-2 transition-all ${selectedImage === img
+                        ? 'border-pink-500 shadow-md scale-105'
                         : 'border-gray-100'
-                    }`}
+                      }`}
                   >
                     <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
@@ -202,9 +208,9 @@ export function ProductDetailPage() {
               <div className="flex items-center gap-3">
                 <div className={`w-2.5 h-2.5 rounded-sm shadow-sm ${(product.inventory || product.stock) > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span className="text-sm font-medium text-gray-700">
-                  {(product.inventory || product.stock) > 10 
-                    ? 'In Stock & Ready to Ship' 
-                    : (product.inventory || product.stock) > 0 
+                  {(product.inventory || product.stock) > 10
+                    ? 'In Stock & Ready to Ship'
+                    : (product.inventory || product.stock) > 0
                       ? `Limited Stock: Only ${product.inventory || product.stock} pieces left`
                       : 'Out of Stock'}
                 </span>
@@ -266,7 +272,7 @@ export function ProductDetailPage() {
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">More in this Type</h2>
               <div className="h-px flex-1 bg-gray-100 ml-6 hidden sm:block"></div>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {similarLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (

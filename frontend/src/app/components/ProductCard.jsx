@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { memo } from 'react';
 
-export const ProductCard = memo(function ProductCard({ product }) {
+export const ProductCard = memo(function ProductCard({ product, priority = false }) {
   let optimizedImageSrc = product.image;
   if (optimizedImageSrc && optimizedImageSrc.includes('cloudinary.com')) {
     if (!optimizedImageSrc.includes('f_auto') && !optimizedImageSrc.includes('q_auto')) {
@@ -16,7 +16,8 @@ export const ProductCard = memo(function ProductCard({ product }) {
           <img
             src={optimizedImageSrc}
             alt={product.title || product.name}
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
           />
