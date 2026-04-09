@@ -53,6 +53,9 @@ export function CheckoutPage() {
         country: 'India'
       });
     }
+
+    // Pre-load Razorpay script on checkout page mount
+    loadRazorpay();
   }, [isAuthenticated, navigate, location.pathname, user]);
 
   const selectSavedAddress = (addr) => {
@@ -73,6 +76,10 @@ export function CheckoutPage() {
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => resolve(true);
