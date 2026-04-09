@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/login
+Disallow: /profile
+Disallow: /orders
+Disallow: /checkout
+Disallow: /login
+Disallow: /signup
+
+Sitemap: https://inayastore.vercel.app/sitemap.xml
