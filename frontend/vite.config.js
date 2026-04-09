@@ -6,15 +6,23 @@ import Sitemap from 'vite-plugin-sitemap'
 
 export default defineConfig({
   plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
-    Sitemap(),
+    Sitemap({
+      hostname: 'https://inayastore.vercel.app',
+      dynamicRoutes: [
+        '/',
+        '/cart',
+        '/privacy-policy',
+        '/terms-and-conditions',
+        '/refund-policy',
+        '/shipping-policy',
+      ],
+      exclude: ['/google8fc9e830a0d7c7eb'],
+    }),
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
   },
@@ -28,6 +36,5 @@ export default defineConfig({
       }
     }
   },
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })
