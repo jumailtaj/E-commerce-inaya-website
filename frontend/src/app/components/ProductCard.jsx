@@ -5,7 +5,8 @@ export const ProductCard = memo(function ProductCard({ product, priority = false
   let optimizedImageSrc = product.image;
   if (optimizedImageSrc && optimizedImageSrc.includes('cloudinary.com')) {
     if (!optimizedImageSrc.includes('f_auto') && !optimizedImageSrc.includes('q_auto')) {
-      optimizedImageSrc = optimizedImageSrc.replace('/upload/', '/upload/f_auto,q_auto,w_500,c_limit/');
+      const imgWidth = typeof window !== 'undefined' && window.innerWidth < 640 ? '300' : '500';
+      optimizedImageSrc = optimizedImageSrc.replace('/upload/', `/upload/f_auto,q_auto,w_${imgWidth},c_limit/`);
     }
   }
 
