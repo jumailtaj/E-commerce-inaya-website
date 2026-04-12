@@ -80,24 +80,24 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 min-h-[400px]">
             {loading ? (
               Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className="bg-white rounded-sm overflow-hidden shadow-sm animate-pulse">
-                  <div className="aspect-square bg-gray-200"></div>
-                  <div className="p-2">
-                    <div className="h-4 bg-gray-200 w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 w-1/4"></div>
+                  <div className="aspect-square bg-pink-50/50"></div>
+                  <div className="p-3">
+                    <div className="h-4 bg-gray-100 rounded-sm w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-100 rounded-sm w-1/4"></div>
                   </div>
                 </div>
               ))
             ) : products.length > 0 ? (
               products.map((product, i) => (
-                <ProductCard key={product.id || product._id} product={product} priority={i === 0 || i === 1} />
+                <ProductCard key={product.id || product._id} product={product} priority={i < 4} />
               ))
             ) : (
-              <div className="col-span-full py-20 text-center bg-white rounded-sm border-2 border-dashed border-pink-100">
-                <p className="text-gray-400 italic">No products found matching your selection.</p>
+              <div className="col-span-full py-24 text-center bg-white rounded-sm border-2 border-dashed border-pink-100/50">
+                <p className="text-gray-400 font-light italic">No premium accessories found matching your selection.</p>
               </div>
             )}
           </div>

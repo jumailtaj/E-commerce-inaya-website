@@ -18,7 +18,10 @@ export const ProductCard = memo(function ProductCard({ product, priority = false
             alt={product.title || product.name}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            decoding="async"
+            width="400"
+            height="400"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
             onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
           />
         </div>
