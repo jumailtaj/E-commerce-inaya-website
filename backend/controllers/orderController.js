@@ -111,45 +111,54 @@ exports.verifyPayment = async (req, res) => {
       razorpay_signature
     } = req.body;
 
+    // 1. Signature validation using the same logic but with better robustness
     const sign = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(sign.toString())
       .digest('hex');
 
-    if (razorpay_signature === expectedSign) {
-      // 1. Find and update payment
-      const payment = await Payment.findOne({ razorpayOrderId: razorpay_order_id });
-      if (!payment) return res.status(404).json({ message: 'Payment record not found' });
-
-      if (payment.status === 'completed') {
-          return res.status(200).json({ message: 'Payment already verified' });
-      }
-
-      payment.status = 'completed';
-      payment.razorpayPaymentId = razorpay_payment_id;
-      payment.razorpaySignature = razorpay_signature;
-      await payment.save();
-
-      // 2. Update order
-      const order = await Order.findById(payment.order);
-      order.paymentStatus = 'paid';
-      order.orderStatus = 'placed';
-      order.statusHistory.push({ status: 'placed' });
-      await order.save();
-
-      // 3. Deduct stock atomically
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity, inventory: -item.quantity }
-        });
-      }
-
-      res.status(200).json({ message: 'Payment verified successfully', order });
-    } else {
-      res.status(400).json({ message: 'Invalid payment signature' });
+    if (razorpay_signature !== expectedSign) {
+      console.warn(`[SECURITY] Invalid signature attempt for Order: ${razorpay_order_id}`);
+      return res.status(400).json({ message: 'Invalid payment signature' });
     }
+
+    // 2. Find payment with strict ownership check
+    const payment = await Payment.findOne({ 
+      razorpayOrderId: razorpay_order_id,
+      user: req.user._id // Ensure it belongs to the current user
+    });
+    
+    if (!payment) return res.status(404).json({ message: 'Payment record not found or unauthorized' });
+
+    if (payment.status === 'completed') {
+      return res.status(200).json({ message: 'Payment already verified', orderId: payment.order });
+    }
+
+    payment.status = 'completed';
+    payment.razorpayPaymentId = razorpay_payment_id;
+    payment.razorpaySignature = razorpay_signature;
+    await payment.save();
+
+    // 3. Update order
+    const order = await Order.findById(payment.order);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    
+    order.paymentStatus = 'paid';
+    order.orderStatus = 'placed';
+    order.statusHistory.push({ status: 'placed' });
+    await order.save();
+
+    // 4. Deduct stock
+    for (const item of order.items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity, inventory: -item.quantity }
+      });
+    }
+
+    res.status(200).json({ message: 'Payment verified successfully', order });
   } catch (error) {
+    console.error('Verification failed:', error);
     res.status(500).json({ message: 'Failed to verify payment', error: error.message });
   }
 };
@@ -194,7 +203,7 @@ exports.handleWebhook = async (req, res) => {
 
   try {
     const shasum = crypto.createHmac('sha256', secret);
-    shasum.update(JSON.stringify(req.body));
+    shasum.update(req.rawBody || JSON.stringify(req.body));
     const digest = shasum.digest('hex');
 
     if (signature === digest) {
