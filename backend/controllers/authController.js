@@ -112,9 +112,52 @@ const login = async (req, res) => {
   }
 };
 
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// @desc    Authenticate with Google
+// @route   POST /api/auth/google
+// @access  Public
+const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = await User.create({
+        name,
+        email,
+        password: await bcrypt.hash(googleId + (process.env.JWT_SECRET || 'google_fallback'), 10), // Dummy password
+        role: 'user',
+        isGoogleUser: true, // You might want to add this field to your model
+      });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(401).json({ message: 'Invalid Google token' });
+  }
+};
+
 // @desc    Get user data
-// @route   GET /api/auth/me
-// @access  Private
 const getMe = async (req, res) => {
   res.status(200).json(req.user);
 };
@@ -122,5 +165,6 @@ const getMe = async (req, res) => {
 module.exports = {
   signup,
   login,
+  googleLogin,
   getMe,
 };

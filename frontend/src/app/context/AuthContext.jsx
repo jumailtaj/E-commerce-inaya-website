@@ -46,6 +46,20 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const googleLogin = async (googleToken) => {
+    try {
+      const res = await api.post('/auth/google-login', {
+        token: googleToken
+      });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+      setUser(res.data);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Google Login failed' };
+    }
+  };
+
   const signup = async (name, email, password, adminSecret) => {
     try {
       const res = await api.post('/auth/signup', { name, email, password, adminSecret });
@@ -115,7 +129,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       user, 
       isAuthenticated: !!user, 
-      login, signup, logout, 
+      login, googleLogin, signup, logout, 
       updateProfile, 
       addAddress, updateAddress, deleteAddress,
       loading 

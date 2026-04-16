@@ -1,34 +1,37 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 /**
  * Reusable Google Login Button component.
- * Decodes user info and logs it to console.
+ * Sends the Google token to the backend for verification.
  */
 const LoginButton = () => {
-    const handleSuccess = (credentialResponse) => {
+    const { googleLogin } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSuccess = async (credentialResponse) => {
         try {
             const token = credentialResponse.credential;
-            const decoded = jwtDecode(token);
+            const result = await googleLogin(token);
             
-            console.log("Login Success! User Data:", {
-                name: decoded.name,
-                email: decoded.email,
-                picture: decoded.picture,
-                sub: decoded.sub // The user's unique Google ID
-            });
-            
-            // You can now store this data in your app state or send it to your backend.
-            alert(`Welcome, ${decoded.name}! Check the console for your details.`);
+            if (result.success) {
+                toast.success('Google login successful!');
+                navigate('/');
+            } else {
+                toast.error(result.message || 'Google authentication failed');
+            }
         } catch (error) {
-            console.error("Failed to decode JWT:", error);
+            console.error("Google Login Error:", error);
+            toast.error("An error occurred during Google Login");
         }
     };
 
     const handleError = () => {
         console.error("Login Failed. Please try again.");
-        alert("Google Login failed. Check your network or console for details.");
+        toast.error("Google Login failed. Please try again.");
     };
 
     return (
