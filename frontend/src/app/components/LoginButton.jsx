@@ -37,6 +37,7 @@ const GoogleLoginButton = () => {
             toast.error('Google Login failed. Please try again.');
         },
         flow: 'auth-code',
+        scope: 'openid email profile',
     });
 
     return (

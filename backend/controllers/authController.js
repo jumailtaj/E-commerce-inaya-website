@@ -114,31 +114,31 @@ const login = async (req, res) => {
 
 const { OAuth2Client } = require('google-auth-library');
 
-// Startup validation — fail loudly if Google OAuth env vars are missing
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  console.warn(
-    '[Auth] WARNING: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set. ' +
-    'Google login will fail. Add them to your Railway environment variables.'
-  );
-}
-
-const client = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  'postmessage' // Special redirect URI for @react-oauth/google auth-code flow
-);
-
-
 // @desc    Authenticate with Google
 // @route   POST /api/auth/google-login
 // @access  Public
 const googleLogin = async (req, res) => {
   const { token: code } = req.body; // In 'auth-code' flow, this is the authorization code
 
+  if (!code) {
+    return res.status(400).json({ message: 'Authorization code is missing' });
+  }
+
+  // Use a fresh client instance per request to avoid state corruption
+  const client = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'postmessage'
+  );
+
   try {
     // Exchange the authorization code for tokens
     const { tokens } = await client.getToken(code);
-    client.setCredentials(tokens);
+    
+    if (!tokens.id_token) {
+      console.error('Exchange successful but no id_token returned. Scopes might be missing.');
+      return res.status(401).json({ message: 'Google did not return an ID token. Please try again.' });
+    }
 
     // Verify the ID token to get user info
     const ticket = await client.verifyIdToken({
@@ -159,7 +159,7 @@ const googleLogin = async (req, res) => {
         email,
         password: await bcrypt.hash(googleId + (process.env.JWT_SECRET || 'google_fallback'), 10), // Dummy password
         role: 'user',
-        isGoogleUser: true, // You might want to add this field to your model
+        isGoogleUser: true,
       });
     }
 
@@ -172,7 +172,10 @@ const googleLogin = async (req, res) => {
     });
   } catch (error) {
     console.error('Google Auth Error:', error);
-    res.status(401).json({ message: 'Invalid Google token' });
+    
+    // Return more specific error message if available
+    const errorMsg = error.response?.data?.error_description || error.message || 'Invalid Google token';
+    res.status(401).json({ message: errorMsg });
   }
 };
 
