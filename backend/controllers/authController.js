@@ -113,11 +113,21 @@ const login = async (req, res) => {
 };
 
 const { OAuth2Client } = require('google-auth-library');
+
+// Startup validation — fail loudly if Google OAuth env vars are missing
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  console.warn(
+    '[Auth] WARNING: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set. ' +
+    'Google login will fail. Add them to your Railway environment variables.'
+  );
+}
+
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  'postmessage' // Special redirect URI for @react-oauth/google
+  'postmessage' // Special redirect URI for @react-oauth/google auth-code flow
 );
+
 
 // @desc    Authenticate with Google
 // @route   POST /api/auth/google-login
