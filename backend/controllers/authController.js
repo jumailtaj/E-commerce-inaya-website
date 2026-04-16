@@ -124,6 +124,14 @@ const googleLogin = async (req, res) => {
     return res.status(400).json({ message: 'Authorization code is missing' });
   }
 
+  // Pre-flight check: ensure environment variables are present before proceeding
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.error('[Auth] Configuration Error: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing from environment.');
+    return res.status(503).json({ 
+      message: 'Google login is not configured on this server. Please contact support.' 
+    });
+  }
+
   // Use a fresh client instance per request to avoid state corruption
   const client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
