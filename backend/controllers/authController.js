@@ -113,17 +113,26 @@ const login = async (req, res) => {
 };
 
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  'postmessage' // Special redirect URI for @react-oauth/google
+);
 
 // @desc    Authenticate with Google
-// @route   POST /api/auth/google
+// @route   POST /api/auth/google-login
 // @access  Public
 const googleLogin = async (req, res) => {
-  const { token } = req.body;
+  const { token: code } = req.body; // In 'auth-code' flow, this is the authorization code
 
   try {
+    // Exchange the authorization code for tokens
+    const { tokens } = await client.getToken(code);
+    client.setCredentials(tokens);
+
+    // Verify the ID token to get user info
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
