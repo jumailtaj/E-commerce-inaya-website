@@ -65,7 +65,16 @@ const productSchema = new mongoose.Schema({
     default: true // Soft delete toggle
   },
   tags: [{ type: String }],
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Virtual for 'type' as an alias for 'category'
+productSchema.virtual('type').get(function() {
+  return this.category;
+});
 
 // Pre-save to sync 'name' with 'title'
 productSchema.pre('save', function() {

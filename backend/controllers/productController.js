@@ -7,7 +7,7 @@ const getProducts = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     let query = {};
-    if (type) query.type = type;
+    if (type) query.category = type;
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
+import { Helmet } from 'react-helmet-async';
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Minus, Plus, ArrowLeft } from 'lucide-react';
@@ -43,12 +44,13 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     const fetchSimilarProducts = async () => {
-      if (!product?.type) return;
+      const productType = product.type || product.category;
+      if (!productType) return;
 
       setSimilarLoading(true);
       try {
         const response = await api.get('/products', {
-          params: { type: product.type, limit: 10 }
+          params: { type: productType, limit: 10 }
         });
         const productsList = response.data.products || (Array.isArray(response.data) ? response.data : []);
 
@@ -186,7 +188,7 @@ export function ProductDetailPage() {
           <div className="lg:w-[55%] flex flex-col pt-2 lg:pt-0">
             <div className="mb-8">
               <span className="inline-block px-3 py-1 bg-pink-50 text-pink-600 rounded-sm text-[11px] font-bold uppercase tracking-wider mb-4 border border-pink-100">
-                {product.type}
+                {product.type || product.category}
               </span>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 tracking-tight">
                 {product.title || product.name}
