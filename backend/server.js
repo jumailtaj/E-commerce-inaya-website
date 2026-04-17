@@ -73,7 +73,19 @@ app.post("/api/auth/logout", protect, logout);
 // Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  
+  // Handle Multer errors specifically
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ 
+      message: 'File too large. Maximum limit is 5MB',
+      error: err.message 
+    });
+  }
+
+  res.status(err.status || 500).json({ 
+    message: err.message || "Something went wrong!",
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+  });
 });
 
 const PORT = process.env.PORT;
