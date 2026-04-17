@@ -125,20 +125,24 @@ const googleLogin = async (req, res) => {
   }
 
   // Ensure dotenv is refreshed in serverless environments
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  if (!process.env.GOOGLE_CLIENT_ID && !process.env.VITE_GOOGLE_CLIENT_ID) {
     require('dotenv').config();
   }
 
+  // Flexible key detection: support both standard and VITE_ prefixed names
+  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
+  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || process.env.VITE_GOOGLE_CLIENT_SECRET;
+
   // Diagnostic logging (does not leak secrets)
   console.log('[Auth] Checking Google Config:', {
-    hasId: !!process.env.GOOGLE_CLIENT_ID,
-    idLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
-    hasSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-    secretLength: process.env.GOOGLE_CLIENT_SECRET?.length || 0
+    hasId: !!GOOGLE_CLIENT_ID,
+    idLength: GOOGLE_CLIENT_ID?.length || 0,
+    hasSecret: !!GOOGLE_CLIENT_SECRET,
+    secretLength: GOOGLE_CLIENT_SECRET?.length || 0
   });
 
   // Pre-flight check
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     console.error('[Auth] Configuration Error: Google credentials are missing from environment.');
     return res.status(503).json({ 
       message: 'Google login is not configured on this server. Please contact support.' 
@@ -147,8 +151,8 @@ const googleLogin = async (req, res) => {
 
   // Use a fresh client instance per request to avoid state corruption
   const client = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
     'postmessage'
   );
 
