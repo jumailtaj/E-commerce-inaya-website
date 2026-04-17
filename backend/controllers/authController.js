@@ -168,7 +168,7 @@ const googleLogin = async (req, res) => {
     // Verify the ID token to get user info
     const ticket = await client.verifyIdToken({
       idToken: tokens.id_token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
