@@ -68,9 +68,8 @@ const productSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save to sync 'name' with 'title'
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function() {
   if (this.title && !this.name) this.name = this.title;
-  next();
 });
 
 productSchema.index({ title: 'text', name: 'text', category: 'text' });

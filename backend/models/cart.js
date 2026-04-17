@@ -27,9 +27,8 @@ const cartSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save to update 'updatedAt' field
-cartSchema.pre('save', function(next) {
+cartSchema.pre('save', function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model('Cart', cartSchema);

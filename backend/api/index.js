@@ -61,7 +61,18 @@ app.use("/api/admin", adminRoutes);
 // Generic error handler for serverless functions
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "API Runtime Error", details: err.message });
+
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ 
+      message: 'File too large. Maximum limit is 5MB',
+      error: err.message 
+    });
+  }
+
+  res.status(err.status || 500).json({ 
+    message: err.message || "API Runtime Error", 
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
 });
 
 module.exports = serverless(app);

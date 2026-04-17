@@ -85,7 +85,8 @@ export function AdminPage() {
         setSelectedOrder(prev => ({ ...prev, orderStatus: newStatus }));
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Update failed';
+      const errorData = error.response?.data;
+      const errorMsg = (typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error)) || 'Update failed';
       toast.error(errorMsg);
     }
   };
@@ -113,7 +114,8 @@ export function AdminPage() {
       resetForm();
       fetchProducts();
     } catch (error) {
-      const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Save failed';
+      const errorData = error.response?.data;
+      const errorMsg = (typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error)) || 'Save failed';
       toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
@@ -147,7 +149,8 @@ export function AdminPage() {
       toast.success('Deleted');
       fetchProducts();
     } catch (error) {
-      const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Delete failed';
+      const errorData = error.response?.data;
+      const errorMsg = (typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error)) || 'Delete failed';
       toast.error(errorMsg);
     }
   };

@@ -63,7 +63,7 @@ const orderSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save to generate a human-unique Order ID (e.g. INY-1712034567-456)
-orderSchema.pre('save', function(next) {
+orderSchema.pre('save', function() {
   if (!this.orderNumber) {
     this.orderNumber = 'INY-' + Date.now() + '-' + Math.floor(Math.random() * 900 + 100);
   }
@@ -72,8 +72,6 @@ orderSchema.pre('save', function(next) {
   if (this.isNew && this.orderStatus) {
     this.statusHistory.push({ status: this.orderStatus });
   }
-  
-  next();
 });
 
 orderSchema.index({ user: 1 });
