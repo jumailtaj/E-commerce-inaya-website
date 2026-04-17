@@ -125,7 +125,7 @@ export function CheckoutPage() {
 
       const orderData = orderRes.data;
 
-      // 2. Initialize Razorpay Checkout
+      // 2. Initialize Razorpay Checkout options
       const options = {
         key: keyId, 
         amount: orderData.amount,
@@ -148,10 +148,14 @@ export function CheckoutPage() {
               navigate('/profile', { state: { orderCompleted: true } });
             } else {
               toast.error(verifyRes.data?.message || 'Payment verification failed');
+              setIsProcessing(false);
+              setLoading(false);
             }
           } catch (err) {
             console.error(err);
             toast.error('Error verifying payment');
+            setIsProcessing(false);
+            setLoading(false);
           }
         },
         prefill: {
@@ -160,13 +164,22 @@ export function CheckoutPage() {
         },
         theme: {
           color: '#db2777' // pink-600
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Razorpay modal dismissed');
+            setIsProcessing(false);
+            setLoading(false);
+          }
         }
       };
+
+      const rzp = new window.Razorpay(options);
 
       rzp.on('payment.failed', async function (response) {
         setIsProcessing(false);
         setLoading(false);
-        console.error('Payment Failed Modal:', response.error);
+        console.error('Payment Failed:', response.error);
         toast.error('Payment Failed: ' + response.error.description);
         
         try {
@@ -176,27 +189,30 @@ export function CheckoutPage() {
         }
       });
 
-      // Handle Escape or clicking 'X' or closing the modal
-      options.modal = {
-        ondismiss: function() {
-          setIsProcessing(false);
-          setLoading(false);
-          toast.info('Payment window closed');
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
       rzp.open();
 
     } catch (error) {
       console.error('Checkout error:', error);
       toast.error(error.response?.data?.message || error.message || 'An error occurred during checkout');
+      setIsProcessing(false);
+      setLoading(false);
     } finally {
       setLoading(false);
-      // isProcessing is kept true until redirect or failure
-      if (!window.Razorpay) setIsProcessing(false); 
     }
   };
+
+  // Mobile Fallback: Reset processing state if window regains focus 
+  // (User returns from mobile app/browser modal)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (isProcessing) {
+        // Wait a bit to allow handlers to finish
+        setTimeout(() => setIsProcessing(false), 3000);
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [isProcessing]);
 
 
   return (
