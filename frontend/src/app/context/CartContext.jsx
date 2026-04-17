@@ -26,13 +26,30 @@ export function CartProvider({ children }) {
   const addToCart = useCallback((product, quantity) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => (item.product._id || item.product.id) === (product._id || product.id));
+      const stockAvailable = product.inventory !== undefined ? product.inventory : (product.stock !== undefined ? product.stock : 99);
+      
       if (existingItem) {
+        const newQuantity = existingItem.quantity + quantity;
+        if (newQuantity > stockAvailable) {
+          toast.warning(`Cannot add more. Only ${stockAvailable} items in stock.`);
+          return prevItems.map((item) =>
+            (item.product._id || item.product.id) === (product._id || product.id)
+              ? { ...item, quantity: stockAvailable }
+              : item
+          );
+        }
         return prevItems.map((item) =>
           (item.product._id || item.product.id) === (product._id || product.id)
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: newQuantity }
             : item
         );
       }
+      
+      if (quantity > stockAvailable) {
+        toast.warning(`Only ${stockAvailable} items available in stock.`);
+        return [...prevItems, { product, quantity: stockAvailable }];
+      }
+      
       return [...prevItems, { product, quantity }];
     });
   }, []);
@@ -46,11 +63,22 @@ export function CartProvider({ children }) {
       removeFromCart(productId);
       return;
     }
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    
+    setCartItems((prevItems) => {
+      const itemToUpdate = prevItems.find(item => (item.product._id || item.product.id) === productId);
+      const stockAvailable = itemToUpdate?.product.inventory !== undefined ? itemToUpdate.product.inventory : (itemToUpdate?.product.stock !== undefined ? itemToUpdate.product.stock : 99);
+      
+      if (quantity > stockAvailable) {
+        toast.warning(`Maximum stock reached (${stockAvailable})`);
+        return prevItems.map((item) =>
+          (item.product._id || item.product.id) === productId ? { ...item, quantity: stockAvailable } : item
+        );
+      }
+      
+      return prevItems.map((item) =>
         (item.product._id || item.product.id) === productId ? { ...item, quantity } : item
-      )
-    );
+      );
+    });
   }, [removeFromCart]);
 
   const clearCart = useCallback(() => {

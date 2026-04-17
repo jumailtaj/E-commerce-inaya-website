@@ -85,7 +85,8 @@ export function CartPage() {
                           variant="outline"
                           size="icon"
                           onClick={() => updateQuantity(item.product._id || item.product.id, item.quantity + 1)}
-                          className="h-8 w-8 rounded-sm border-pink-200 hover:bg-pink-50"
+                          disabled={item.quantity >= (item.product.inventory || item.product.stock)}
+                          className={`h-8 w-8 rounded-sm border-pink-200 hover:bg-pink-50 ${item.quantity >= (item.product.inventory || item.product.stock) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           <Plus className="w-3 h-3" />
                         </Button>

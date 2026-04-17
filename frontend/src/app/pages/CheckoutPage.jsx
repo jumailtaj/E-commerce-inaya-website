@@ -163,21 +163,30 @@ export function CheckoutPage() {
         }
       };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-      
       rzp.on('payment.failed', async function (response) {
         setIsProcessing(false);
+        setLoading(false);
         console.error('Payment Failed Modal:', response.error);
         toast.error('Payment Failed: ' + response.error.description);
         
-        // Optionally notify backend about failure
         try {
           await api.post(`/orders/${orderData.orderId}/fail`);
         } catch (err) {
           console.error('Failed to notify backend of payment failure:', err);
         }
       });
+
+      // Handle Escape or clicking 'X' or closing the modal
+      options.modal = {
+        ondismiss: function() {
+          setIsProcessing(false);
+          setLoading(false);
+          toast.info('Payment window closed');
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
 
     } catch (error) {
       console.error('Checkout error:', error);
