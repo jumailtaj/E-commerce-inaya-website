@@ -19,6 +19,12 @@ export function ProductDetailPage() {
   const [similarLoading, setSimilarLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const optimizeImage = (url, width = '1200') => {
+    if (!url || !url.includes('cloudinary.com')) return url;
+    if (url.includes('f_auto') || url.includes('q_auto')) return url;
+    return url.replace('/upload/', `/upload/f_auto,q_auto:best,w_${width},c_limit,dpr_auto/`);
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -147,7 +153,7 @@ export function ProductDetailPage() {
                         : 'border-gray-100 hover:border-pink-200'
                       }`}
                   >
-                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
+                    <img src={optimizeImage(img, '140')} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
                 ))}
               </div>
@@ -157,7 +163,7 @@ export function ProductDetailPage() {
             <div className="flex-1 bg-white rounded-sm overflow-hidden border border-gray-100 relative group shadow-sm flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
               <div className="relative w-full h-full flex items-center justify-center p-4">
                 <img
-                  src={selectedImage || '/placeholder.png'}
+                  src={optimizeImage(selectedImage || '/placeholder.png', '1200')}
                   alt={product.title || product.name}
                   className="max-w-full max-h-[500px] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-[1.02]"
                   onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }}
@@ -177,7 +183,7 @@ export function ProductDetailPage() {
                         : 'border-gray-100'
                       }`}
                   >
-                    <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
+                    <img src={optimizeImage(img, '130')} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
                   </button>
                 ))}
               </div>

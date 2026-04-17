@@ -4,9 +4,12 @@ import { memo } from 'react';
 export const ProductCard = memo(function ProductCard({ product, priority = false }) {
   let optimizedImageSrc = product.image;
   if (optimizedImageSrc && optimizedImageSrc.includes('cloudinary.com')) {
+    // Check if it's already optimized
     if (!optimizedImageSrc.includes('f_auto') && !optimizedImageSrc.includes('q_auto')) {
-      const imgWidth = typeof window !== 'undefined' && window.innerWidth < 640 ? '300' : '500';
-      optimizedImageSrc = optimizedImageSrc.replace('/upload/', `/upload/f_auto,q_auto,w_${imgWidth},c_limit/`);
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+      // Request higher density for sharp images on mobile (600px) and desktop (1000px)
+      const imgWidth = isMobile ? '600' : '1000';
+      optimizedImageSrc = optimizedImageSrc.replace('/upload/', `/upload/f_auto,q_auto:good,w_${imgWidth},c_limit,dpr_auto/`);
     }
   }
 
