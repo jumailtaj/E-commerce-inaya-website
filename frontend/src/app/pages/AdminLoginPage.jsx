@@ -56,7 +56,7 @@ export function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
-                  placeholder="admin"
+                  placeholder="Enter username"
                 />
               </div>
             </div>
@@ -72,7 +72,7 @@ export function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
-                  placeholder="••••••••"
+                  placeholder="Enter password"
                 />
               </div>
             </div>

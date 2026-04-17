@@ -11,14 +11,12 @@ export function SignupPage() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    adminSecret: ''
+    confirmPassword: ''
   });
   const [error, setError] = useState(null); // Kept error state for existing display logic
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showAdminField, setShowAdminField] = useState(false); // Added showAdminField state
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -37,7 +35,7 @@ export function SignupPage() {
 
     setLoading(true);
     try {
-      const result = await signup(formData.name, formData.email, formData.password, formData.adminSecret);
+      const result = await signup(formData.name, formData.email, formData.password);
       if (result.success) {
         toast.success('Account created successfully!');
         navigate('/');
@@ -147,34 +145,6 @@ export function SignupPage() {
                 </button>
               </div>
             </div>
-
-            <div className="flex items-center justify-between py-2">
-              <button
-                type="button"
-                onClick={() => setShowAdminField(!showAdminField)}
-                className="text-xs text-pink-400 hover:text-pink-600 transition-colors"
-              >
-                {showAdminField ? 'Hide Admin Options' : 'Signup as Admin?'}
-              </button>
-            </div>
-
-            {showAdminField && (
-              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="block text-sm font-medium text-gray-700">
-                  Admin Secret Key
-                </label>
-                <div className="mt-1">
-                  <Input
-                    name="adminSecret"
-                    type="password"
-                    value={formData.adminSecret}
-                    onChange={handleChange}
-                    placeholder="Enter secret key if you are an admin"
-                    className="w-full bg-pink-50/50"
-                  />
-                </div>
-              </div>
-            )}
 
             <div>
               <button
