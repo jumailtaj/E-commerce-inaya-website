@@ -118,15 +118,28 @@ const { OAuth2Client } = require('google-auth-library');
 // @route   POST /api/auth/google-login
 // @access  Public
 const googleLogin = async (req, res) => {
-  const { token: code } = req.body; // In 'auth-code' flow, this is the authorization code
+  const { token: code } = req.body; 
 
   if (!code) {
     return res.status(400).json({ message: 'Authorization code is missing' });
   }
 
-  // Pre-flight check: ensure environment variables are present before proceeding
+  // Ensure dotenv is refreshed in serverless environments
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    console.error('[Auth] Configuration Error: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing from environment.');
+    require('dotenv').config();
+  }
+
+  // Diagnostic logging (does not leak secrets)
+  console.log('[Auth] Checking Google Config:', {
+    hasId: !!process.env.GOOGLE_CLIENT_ID,
+    idLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
+    hasSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+    secretLength: process.env.GOOGLE_CLIENT_SECRET?.length || 0
+  });
+
+  // Pre-flight check
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    console.error('[Auth] Configuration Error: Google credentials are missing from environment.');
     return res.status(503).json({ 
       message: 'Google login is not configured on this server. Please contact support.' 
     });
