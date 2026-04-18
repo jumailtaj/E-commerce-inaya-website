@@ -149,8 +149,8 @@ export function ProductDetailPage() {
                     key={idx}
                     onClick={() => setSelectedImage(img)}
                     className={`w-[70px] h-[70px] rounded-sm overflow-hidden border-2 transition-all hover:scale-105 ${selectedImage === img
-                        ? 'border-pink-500 shadow-md ring-2 ring-pink-50'
-                        : 'border-gray-100 hover:border-pink-200'
+                      ? 'border-pink-500 shadow-md ring-2 ring-pink-50'
+                      : 'border-gray-100 hover:border-pink-200'
                       }`}
                   >
                     <img src={optimizeImage(img, '140')} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
@@ -179,8 +179,8 @@ export function ProductDetailPage() {
                     key={idx}
                     onClick={() => setSelectedImage(img)}
                     className={`h-16 w-16 shrink-0 rounded-sm overflow-hidden border-2 transition-all ${selectedImage === img
-                        ? 'border-pink-500 shadow-md scale-105'
-                        : 'border-gray-100'
+                      ? 'border-pink-500 shadow-md scale-105'
+                      : 'border-gray-100'
                       }`}
                   >
                     <img src={optimizeImage(img, '130')} alt={`Thumb ${idx}`} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.png'; }} />
@@ -223,7 +223,7 @@ export function ProductDetailPage() {
                       : 'Out of Stock'}
                 </span>
               </div>
-              <p className="text-xs text-gray-400">Usually ships within 24-48 hours. Free delivery on orders above ₹500.</p>
+              <p className="text-xs text-gray-400">Usually ships within 24-48 hours.</p>
             </div>
 
             <div className="space-y-8">
