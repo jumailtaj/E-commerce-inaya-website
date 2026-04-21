@@ -158,7 +158,10 @@ const googleLogin = async (req, res) => {
 
   try {
     // Exchange the authorization code for tokens
-    const { tokens } = await client.getToken(code);
+    const { tokens } = await client.getToken({
+      code,
+      redirect_uri: 'postmessage'
+    });
     
     if (!tokens.id_token) {
       console.error('Exchange successful but no id_token returned. Scopes might be missing.');
