@@ -58,10 +58,11 @@ export function ProductDetailPage() {
         const response = await api.get('/products', {
           params: { type: productType, limit: 10 }
         });
-        const productsList = response.data.products || (Array.isArray(response.data) ? response.data : []);
+        
+        setSimilarProducts(response.data?.products || []);
 
         // Filter out current product and limit to 4
-        const filtered = productsList
+        const filtered = (response.data?.products || [])
           .filter(p => (p._id || p.id) !== (product._id || product.id))
           .slice(0, 4);
 

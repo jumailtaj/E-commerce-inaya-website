@@ -35,13 +35,7 @@ export function HomePage() {
           params.search = search;
         }
         const response = await api.get('/products', { params });
-        const productsList = response.data.products || (Array.isArray(response.data) ? response.data : null);
-
-        if (productsList && productsList.length > 0) {
-          setProducts(productsList);
-        } else {
-          setProducts([]);
-        }
+        setProducts(response.data?.products || []);
       } catch (error) {
         console.error('Error fetching products:', error);
         setProducts([]);
@@ -70,8 +64,8 @@ export function HomePage() {
                   key={type}
                   onClick={() => setSelectedType(type)}
                   className={`px-4 py-1.5 rounded-sm text-sm font-medium transition-all ${selectedType === type
-                      ? 'bg-pink-600 text-white shadow-md'
-                      : 'bg-white text-gray-600 hover:bg-pink-50 border border-pink-100'
+                    ? 'bg-pink-600 text-white shadow-md'
+                    : 'bg-white text-gray-600 hover:bg-pink-50 border border-pink-100'
                     }`}
                 >
                   {type}
