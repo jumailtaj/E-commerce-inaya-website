@@ -35,14 +35,7 @@ export function HomePage() {
           params.search = search;
         }
         const response = await api.get('/products', { params });
-        console.log("API RESPONSE RAW:", response.data);
-        
-        const productsArray = Array.isArray(response.data?.products)
-          ? response.data.products
-          : [];
-
-        console.log("EXTRACTED PRODUCTS:", productsArray);
-        setProducts(productsArray);
+        setProducts(response.data?.products || []);
       } catch (error) {
         console.error('Error fetching products:', error);
         setProducts([]);
@@ -52,10 +45,6 @@ export function HomePage() {
     };
     fetchProducts();
   }, [selectedType, search]);
-
-  useEffect(() => {
-    console.log("FINAL PRODUCTS STATE:", products);
-  }, [products]);
 
   return (
     <>
@@ -85,14 +74,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <p style={{ color: "red", fontWeight: "bold", marginBottom: "1rem" }}>
-            DEBUG - Count: {Array.isArray(products) ? products.length : "NOT ARRAY"}
-          </p>
-
-          <div 
-            style={{ border: products.length > 0 ? "none" : "3px solid red" }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 min-h-[400px]"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 min-h-[400px]">
             {loading ? (
               Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className="bg-white rounded-sm overflow-hidden shadow-sm animate-pulse">
