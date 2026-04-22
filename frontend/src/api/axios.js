@@ -1,8 +1,13 @@
 import axios from "axios";
 
+// Ensure baseURL always points to the backend API endpoint
+const baseURL = import.meta.env.VITE_API_URL || 'https://e-commerce-inaya-website-production.up.railway.app/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://e-commerce-inaya-website-production.up.railway.app/api',
-  headers: {},
+  baseURL: baseURL.endsWith('/api') ? baseURL : `${baseURL}/api`,
+  headers: {
+    'Content-Type': 'application/json'
+  },
 });
 
 api.interceptors.request.use(
@@ -18,6 +23,6 @@ api.interceptors.request.use(
   }
 );
 
-console.log("AXIOS ACTIVE");
+console.log("AXIOS ACTIVE - Connecting to:", api.defaults.baseURL);
 
 export default api;
