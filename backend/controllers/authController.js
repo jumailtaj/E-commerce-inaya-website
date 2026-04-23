@@ -160,7 +160,7 @@ const googleLogin = async (req, res) => {
     // Exchange the authorization code for tokens
     const { tokens } = await client.getToken({
       code,
-      redirect_uri: 'https://e-commerce-inaya-website-production.up.railway.app/api/auth/google/callback'
+      redirect_uri: 'postmessage'
     });
     
     if (!tokens.id_token) {
