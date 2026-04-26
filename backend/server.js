@@ -28,6 +28,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.options('*', cors());
+
 app.use(express.json({
   verify: (req, res, buf) => {
     if (req.originalUrl.includes('/webhook')) {
