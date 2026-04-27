@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { syncUserWithFirebase, generateFirebaseToken } = require('../services/firebaseSync');
+
 
 // Generate JWT
 const generateToken = (id) => {
@@ -47,13 +49,17 @@ const signup = async (req, res) => {
     });
 
     if (user) {
+      await syncUserWithFirebase({ ...user.toObject(), authMethod: 'custom_jwt' });
+      const firebaseToken = await generateFirebaseToken(user._id.toString());
       res.status(201).json({
         _id: user.id,
         name: user.name,
         email: user.email,
         token: generateToken(user._id),
+        firebaseToken: firebaseToken || null
       });
     } else {
+
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
@@ -96,14 +102,18 @@ const login = async (req, res) => {
     console.log("[ROLE]", user?.role);
 
     if (user && isMatch) {
+      await syncUserWithFirebase({ ...user.toObject(), authMethod: 'custom_jwt' });
+      const firebaseToken = await generateFirebaseToken(user._id.toString());
       return res.json({
         _id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
         token: generateToken(user._id),
+        firebaseToken: firebaseToken || null
       });
     }
+
 
     res.status(401).json({ message: 'Invalid credentials' });
   } catch (error) {
@@ -191,13 +201,18 @@ const googleLogin = async (req, res) => {
       });
     }
 
+    await syncUserWithFirebase({ ...user.toObject(), authMethod: 'google_oauth' });
+    const firebaseToken = await generateFirebaseToken(user._id.toString());
+
     res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
       token: generateToken(user._id),
+      firebaseToken: firebaseToken || null
     });
+
   } catch (error) {
     console.error('Google Auth Error:', error);
     
