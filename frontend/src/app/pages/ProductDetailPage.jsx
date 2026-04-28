@@ -125,6 +125,26 @@ export function ProductDetailPage() {
         <meta property="og:description" content={`Shop ${product.title || product.name} at Inaya. Premium hair accessories delivered across India.`} />
         <meta property="og:image" content={product.image} />
         <meta property="og:url" content={`https://inayaastore.in/product/${product._id || product.id}`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": product.title || product.name,
+            "image": product.image,
+            "description": product.description,
+            "brand": {
+              "@type": "Brand",
+              "name": "Inaya"
+            },
+            "offers": {
+              "@type": "Offer",
+              "url": `https://www.inayaastore.in/product/${product._id || product.id}`,
+              "priceCurrency": "INR",
+              "price": product.price,
+              "availability": (product.inventory || product.stock) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            }
+          })}
+        </script>
       </Helmet>
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Back Button */}
