@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     Sitemap({
-      hostname: 'https://inayastore.vercel.app',
+      hostname: 'https://www.inayaastore.in',
       dynamicRoutes: [
         '/cart',
         '/privacy-policy',
