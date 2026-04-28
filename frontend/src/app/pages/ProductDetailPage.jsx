@@ -58,7 +58,7 @@ export function ProductDetailPage() {
         const response = await api.get('/products', {
           params: { type: productType, limit: 10 }
         });
-        
+
         setSimilarProducts(response.data?.products || []);
 
         // Filter out current product and limit to 4
@@ -124,7 +124,7 @@ export function ProductDetailPage() {
         <meta property="og:title" content={`${product.title || product.name} — Inaya`} />
         <meta property="og:description" content={`Shop ${product.title || product.name} at Inaya. Premium hair accessories delivered across India.`} />
         <meta property="og:image" content={product.image} />
-        <meta property="og:url" content={`https://inayastore.vercel.app/product/${product._id || product.id}`} />
+        <meta property="og:url" content={`https://inayaastore.in/product/${product._id || product.id}`} />
       </Helmet>
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Back Button */}

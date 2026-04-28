@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://inayastore.vercel.app/</loc>
+    <loc>https://www.inayaastore.in/</loc>
     <priority>1.0</priority>
     <changefreq>daily</changefreq>
   </url>
 
   <url>
-    <loc>https://inayastore.vercel.app/cart</loc>
+    <loc>https://www.inayaastore.in/cart</loc>
     <priority>0.5</priority>
     <changefreq>monthly</changefreq>
   </url>
 
   <url>
-    <loc>https://inayastore.vercel.app/privacy-policy</loc>
+    <loc>https://www.inayaastore.in/privacy-policy</loc>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
   </url>
 
   <url>
-    <loc>https://inayastore.vercel.app/terms-and-conditions</loc>
+    <loc>https://www.inayaastore.in/terms-and-conditions</loc>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
   </url>
 
   <url>
-    <loc>https://inayastore.vercel.app/refund-policy</loc>
+    <loc>https://www.inayaastore.in/refund-policy</loc>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
   </url>
 
   <url>
-    <loc>https://inayastore.vercel.app/shipping-policy</loc>
+    <loc>https://www.inayaastore.in/shipping-policy</loc>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
   </url>

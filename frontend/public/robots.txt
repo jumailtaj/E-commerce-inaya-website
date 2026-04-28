@@ -9,3 +9,4 @@ Disallow: /checkout
 Disallow: /login
 Disallow: /signup
 
+Sitemap: https://www.inayaastore.in/sitemap.xml
