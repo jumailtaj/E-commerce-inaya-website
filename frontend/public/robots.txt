@@ -9,4 +9,3 @@ Disallow: /checkout
 Disallow: /login
 Disallow: /signup
 
-Sitemap: https://inayastore.vercel.app/sitemap.xml
