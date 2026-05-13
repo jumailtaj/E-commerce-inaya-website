@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router';
 import { Helmet } from 'react-helmet-async';
 import { ProductCard } from '../components/ProductCard';
 import { Hero } from '../components/Hero';
+import GoogleAd from '../components/GoogleAd';
 import api from '../../api/axios';
 
 export function HomePage() {
@@ -54,6 +55,7 @@ export function HomePage() {
       </Helmet>
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <Hero />
+        <GoogleAd slot="3456789012" />
         <div id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-2xl font-serif text-gray-800">Our Products</h2>

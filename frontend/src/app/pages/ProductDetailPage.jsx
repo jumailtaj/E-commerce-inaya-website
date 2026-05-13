@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Minus, Plus, ArrowLeft } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
+import GoogleAd from '../components/GoogleAd';
 import { toast } from 'sonner';
 import api from '../../api/axios';
 
@@ -293,6 +294,8 @@ export function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        <GoogleAd slot="9876543210" />
 
         {/* Similar Products Section */}
         {(similarLoading || similarProducts.length > 0) && (
