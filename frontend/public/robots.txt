@@ -1,12 +1,4 @@
 User-agent: *
 Allow: /
 
-Disallow: /admin
-Disallow: /admin/login
-Disallow: /profile
-Disallow: /orders
-Disallow: /checkout
-Disallow: /login
-Disallow: /signup
-
 Sitemap: https://www.inayaastore.in/sitemap.xml

@@ -3,7 +3,7 @@ import { Button } from '../components/ui/button';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
 
 export function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
@@ -35,10 +35,10 @@ export function CartPage() {
 
   return (
     <>
-      <helmet>
+      <Helmet>
         <title>Cart - Inaya</title>
         <meta name="description" content="Your shopping cart - Inaya" />
-      </helmet>
+      </Helmet>
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-serif text-gray-800 mb-8">Shopping Cart</h1>

@@ -8,6 +8,7 @@ import { ProductCard } from '../components/ProductCard';
 import GoogleAd from '../components/GoogleAd';
 import { toast } from 'sonner';
 import api from '../../api/axios';
+import ReactPixel from 'react-facebook-pixel';
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -103,6 +104,17 @@ export function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
+
+    // Meta Pixel Event
+    ReactPixel.track('AddToCart', {
+      content_name: product.title || product.name,
+      content_category: product.type || product.category,
+      content_ids: [product._id || product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'INR'
+    });
+
     toast.success(`Added ${quantity} ${product.title || product.name} to cart`);
   };
 
