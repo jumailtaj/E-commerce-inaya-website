@@ -1,3 +1,9 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Hide empty AdSense spaces while waiting for approval */
+ins.adsbygoogle[data-ad-status="unfilled"],
+.ad-wrapper:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+    display: none !important;
+}
