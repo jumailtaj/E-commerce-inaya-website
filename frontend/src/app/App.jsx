@@ -7,14 +7,12 @@ import { Toaster } from './components/ui/sonner';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { Analytics } from "@vercel/analytics/react"
-import ReactPixel from 'react-facebook-pixel';
+import { initMetaPixel } from '../../utils/metaPixel';
 
 export default function App() {
   useEffect(() => {
     // Initialize the pixel with ID
-    ReactPixel.init('973946395353124');
-    // Log the initial PageView
-    ReactPixel.pageView();
+    initMetaPixel();
   }, []);
 
   return (

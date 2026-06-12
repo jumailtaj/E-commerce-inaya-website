@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import LoginButton from '../components/LoginButton';
+import { trackCompleteRegistration } from '../../utils/metaPixel';
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -38,6 +39,7 @@ export function SignupPage() {
       const result = await signup(formData.name, formData.email, formData.password);
       if (result.success) {
         toast.success('Account created successfully!');
+        trackCompleteRegistration();
         navigate('/');
       } else {
         setError(result.message);

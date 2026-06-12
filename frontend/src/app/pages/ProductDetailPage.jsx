@@ -8,7 +8,7 @@ import { ProductCard } from '../components/ProductCard';
 import GoogleAd from '../components/GoogleAd';
 import { toast } from 'sonner';
 import api from '../../api/axios';
-import ReactPixel from 'react-facebook-pixel';
+import { trackViewContent, trackAddToCart as metaTrackAddToCart } from '../../utils/metaPixel';
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -35,6 +35,7 @@ export function ProductDetailPage() {
         if (response.data) {
           setProduct(response.data);
           setSelectedImage(response.data.image);
+          trackViewContent(response.data);
         } else {
           toast.error('Product data is empty');
         }
@@ -106,14 +107,7 @@ export function ProductDetailPage() {
     addToCart(product, quantity);
 
     // Meta Pixel Event
-    ReactPixel.track('AddToCart', {
-      content_name: product.title || product.name,
-      content_category: product.type || product.category,
-      content_ids: [product._id || product.id],
-      content_type: 'product',
-      value: product.price,
-      currency: 'INR'
-    });
+    metaTrackAddToCart(product);
 
     toast.success(`Added ${quantity} ${product.title || product.name} to cart`);
   };

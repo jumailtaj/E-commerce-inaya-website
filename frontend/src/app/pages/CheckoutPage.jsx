@@ -11,7 +11,7 @@ import { Input } from '../components/ui/input';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
 import { MapPin, Check, Plus } from 'lucide-react';
-import ReactPixel from 'react-facebook-pixel';
+import { trackPurchase } from '../../utils/metaPixel';
 
 export function CheckoutPage() {
   const location = useLocation();
@@ -148,12 +148,7 @@ export function CheckoutPage() {
               toast.success('Payment Successful!');
               
               // Meta Pixel Purchase Event
-              ReactPixel.track('Purchase', {
-                value: totalAmount,
-                currency: 'INR',
-                content_ids: itemsToCheckout.map(item => item.product._id || item.product.id),
-                content_type: 'product'
-              });
+              trackPurchase(totalAmount, itemsToCheckout);
 
               if (!buyNowItem) clearCart();
               navigate('/profile', { state: { orderCompleted: true } });
