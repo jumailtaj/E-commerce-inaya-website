@@ -25,12 +25,17 @@ export const initMetaPixel = () => {
 };
 
 export const trackPageView = () => {
+  if (!isInitialized) {
+    console.warn('[META] trackPageView called before initMetaPixel! Skipping.');
+    return;
+  }
   ReactPixel.pageView();
   logEvent('PageView');
 };
 
 export const trackViewContent = (product) => {
-  if (!product) return;
+  if (!isInitialized) { console.warn('[META] trackViewContent called before initMetaPixel!'); return; }
+  if (!product) { console.warn('[META] trackViewContent: product is null/undefined'); return; }
   const payload = {
     content_ids: [String(product._id || product.id)],
     content_type: 'product',
@@ -54,6 +59,7 @@ export const trackAddToCart = (product) => {
 };
 
 export const trackInitiateCheckout = (cartTotal) => {
+  if (!isInitialized) { console.warn('[META] trackInitiateCheckout called before initMetaPixel!'); return; }
   const payload = {
     value: Number(cartTotal) || 0,
     currency: 'INR'
@@ -83,6 +89,7 @@ export const trackLead = (formData) => {
 };
 
 export const trackCompleteRegistration = () => {
+  if (!isInitialized) { console.warn('[META] trackCompleteRegistration called before initMetaPixel!'); return; }
   const payload = {
     status: 'success'
   };

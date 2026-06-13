@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { RouterProvider } from 'react-router';
 import { router } from './routes';
 import { CartProvider } from './context/CartContext';
@@ -9,12 +8,11 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 import { Analytics } from "@vercel/analytics/react"
 import { initMetaPixel } from '../../utils/metaPixel';
 
-export default function App() {
-  useEffect(() => {
-    // Initialize the pixel with ID
-    initMetaPixel();
-  }, []);
+// Initialize Meta Pixel synchronously at module load time
+// This ensures it is ready before any child component useEffect fires
+initMetaPixel();
 
+export default function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
