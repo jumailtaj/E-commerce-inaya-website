@@ -1,23 +1,27 @@
 import ReactPixel from 'react-facebook-pixel';
 
 const PIXEL_ID = '973946395353124';
-const IS_DEV = import.meta.env.DEV; // Vite specific environment variable for development mode
+const IS_DEV = import.meta.env.DEV; 
 
 const logEvent = (event, payload = null) => {
+  // Always log for LIVE debugging as requested by user
+  console.log(`[META] ${event} Fired`, payload || '');
   if (IS_DEV) {
     console.log(`\n[META PIXEL] Event Fired:\nEvent Name: ${event}\nPayload:`, payload, `\nTimestamp: ${new Date().toISOString()}\n`);
   }
 };
 
+let isInitialized = false;
+
 export const initMetaPixel = () => {
+  if (isInitialized) return;
   const options = {
-    autoConfig: false, // strictly disable auto PageView so Layout.jsx is the single source of truth
-    debug: false,
+    autoConfig: false, 
+    debug: true, // Enable debug mode for LIVE to see react-facebook-pixel logs
   };
   ReactPixel.init(PIXEL_ID, undefined, options);
-  if (IS_DEV) {
-    console.log(`[META PIXEL] Initialized with ID: ${PIXEL_ID} (autoConfig: false)`);
-  }
+  isInitialized = true;
+  console.log(`[META] Initialized with ID: ${PIXEL_ID}`);
 };
 
 export const trackPageView = () => {
