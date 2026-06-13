@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));
       setUser(res.data);
-      return { success: true };
+      return { success: true, isNewUser: res.data.isNewUser };
     } catch (err) {
       return { success: false, message: err.response?.data?.message || 'Google Login failed' };
     }

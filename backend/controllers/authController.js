@@ -187,10 +187,12 @@ const googleLogin = async (req, res) => {
     const payload = ticket.getPayload();
     const { email, name, picture, sub: googleId } = payload;
 
+    let isNewUser = false;
     // Check if user exists
     let user = await User.findOne({ email });
 
     if (!user) {
+      isNewUser = true;
       // Create new user if doesn't exist
       user = await User.create({
         name,
@@ -210,7 +212,8 @@ const googleLogin = async (req, res) => {
       email: user.email,
       role: user.role,
       token: generateToken(user._id),
-      firebaseToken: firebaseToken || null
+      firebaseToken: firebaseToken || null,
+      isNewUser
     });
 
   } catch (error) {

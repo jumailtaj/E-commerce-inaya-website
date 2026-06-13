@@ -3,6 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { trackCompleteRegistration } from '../../utils/metaPixel';
 
 // Guard: check if Google OAuth is configured before the component mounts
 const isGoogleConfigured = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
@@ -23,6 +24,9 @@ const GoogleLoginButton = () => {
 
                 if (result.success) {
                     toast.success('Google login successful!');
+                    if (result.isNewUser) {
+                        trackCompleteRegistration();
+                    }
                     navigate('/');
                 } else {
                     toast.error(result.message || 'Google authentication failed');

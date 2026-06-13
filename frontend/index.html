@@ -3,18 +3,8 @@
 
 <head>
   <script>
-    !function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () {
-        n.callMethod ?
-          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-      };
-      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-      n.queue = []; t = b.createElement(e); t.async = !0;
-      t.src = v; s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s)
-    }(window, document, 'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '973946395353124');
+    // Facebook Pixel has been removed from index.html to prevent duplicate PageView events.
+    // Initialization is strictly handled by react-facebook-pixel in App.jsx.
   </script>
 
   <link rel="preconnect" href="https://www.inayaastore.in" />
@@ -101,10 +91,7 @@
 </head>
 
 <body>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=973946395353124&ev=PageView&noscript=1" />
-  </noscript>
+  <!-- Meta Pixel noscript fallback removed to prevent duplicate PageView events -->
 
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3R7JPFM" height="0" width="0"
       style="display:none;visibility:hidden"></iframe></noscript>

@@ -8,7 +8,7 @@ import { ProductCard } from '../components/ProductCard';
 import GoogleAd from '../components/GoogleAd';
 import { toast } from 'sonner';
 import api from '../../api/axios';
-import { trackViewContent, trackAddToCart as metaTrackAddToCart } from '../../utils/metaPixel';
+import { trackViewContent, trackAddToCart as metaTrackAddToCart, trackInitiateCheckout } from '../../utils/metaPixel';
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -114,6 +114,7 @@ export function ProductDetailPage() {
 
   const handleBuyNow = () => {
     if (product) {
+      trackInitiateCheckout(product.price * quantity);
       navigate('/checkout', { state: { product, quantity } });
     }
   };
