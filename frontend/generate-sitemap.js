@@ -6,7 +6,9 @@ const API_URL = 'https://e-commerce-inaya-website-production-c055.up.railway.app
 
 const staticRoutes = [
   '/',
-  '/cart',
+  '/about',
+  '/contact',
+  '/hair-care-guide',
   '/privacy-policy',
   '/terms-and-conditions',
   '/refund-policy',
@@ -33,11 +35,33 @@ async function generateSitemap() {
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allRoutes.map(route => `  <url>
+${allRoutes.map(route => {
+  let changefreq = 'weekly';
+  let priority = '0.5';
+
+  if (route === '/') {
+    changefreq = 'daily';
+    priority = '1.0';
+  } else if (route === '/hair-care-guide') {
+    changefreq = 'weekly';
+    priority = '0.8';
+  } else if (route === '/about' || route === '/contact') {
+    changefreq = 'monthly';
+    priority = '0.7';
+  } else if (route.includes('-policy') || route.includes('-conditions')) {
+    changefreq = 'monthly';
+    priority = '0.5';
+  } else if (route.includes('/product/')) {
+    changefreq = 'weekly';
+    priority = '0.8';
+  }
+
+  return `  <url>
     <loc>${BASE_URL}${route}</loc>
-    <changefreq>${route === '/' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${route === '/' ? '1.0' : route.includes('/product/') ? '0.8' : '0.5'}</priority>
-  </url>`).join('\n')}
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+}).join('\n')}
 </urlset>`;
 
     if (!fs.existsSync('./public')) {

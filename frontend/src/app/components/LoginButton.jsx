@@ -3,7 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { trackCompleteRegistration } from '../../utils/metaPixel';
+import { trackCompleteRegistration } from '@/utils/metaPixel';
 
 // Guard: check if Google OAuth is configured before the component mounts
 const isGoogleConfigured = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);

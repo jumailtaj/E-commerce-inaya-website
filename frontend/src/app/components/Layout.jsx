@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { trackPageView } from '../../utils/metaPixel';
+import { trackPageView } from '@/utils/metaPixel';
 
 export function Layout() {
   const location = useLocation();

@@ -11,7 +11,7 @@ import { Input } from '../components/ui/input';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
 import { MapPin, Check, Plus } from 'lucide-react';
-import { trackPurchase } from '../../utils/metaPixel';
+import { trackPurchase } from '@/utils/metaPixel';
 
 export function CheckoutPage() {
   const location = useLocation();

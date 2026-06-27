@@ -6,7 +6,7 @@ import { Toaster } from './components/ui/sonner';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { Analytics } from "@vercel/analytics/react"
-import { initMetaPixel } from '../../utils/metaPixel';
+import { initMetaPixel } from '@/utils/metaPixel';
 
 // Initialize Meta Pixel synchronously at module load time
 // This ensures it is ready before any child component useEffect fires

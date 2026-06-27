@@ -45,6 +45,9 @@ const PrivacyPolicy = lazyImport(() => import('./pages/PrivacyPolicy'), 'Privacy
 const TermsAndConditions = lazyImport(() => import('./pages/TermsAndConditions'), 'TermsAndConditions');
 const RefundPolicy = lazyImport(() => import('./pages/RefundPolicy'), 'RefundPolicy');
 const ShippingPolicy = lazyImport(() => import('./pages/ShippingPolicy'), 'ShippingPolicy');
+const AboutPage = lazyImport(() => import('./pages/AboutPage'), 'AboutPage');
+const ContactPage = lazyImport(() => import('./pages/ContactPage'), 'ContactPage');
+const HairCareGuidePage = lazyImport(() => import('./pages/HairCareGuidePage'), 'HairCareGuidePage');
 
 const withSuspense = (Component) => (
   <ErrorBoundary>
@@ -67,6 +70,9 @@ export const router = createBrowserRouter([
       { path: 'terms-and-conditions', element: withSuspense(TermsAndConditions) },
       { path: 'refund-policy', element: withSuspense(RefundPolicy) },
       { path: 'shipping-policy', element: withSuspense(ShippingPolicy) },
+      { path: 'about', element: withSuspense(AboutPage) },
+      { path: 'contact', element: withSuspense(ContactPage) },
+      { path: 'hair-care-guide', element: withSuspense(HairCareGuidePage) },
       { 
         element: <ProtectedRoute />,
         children: [

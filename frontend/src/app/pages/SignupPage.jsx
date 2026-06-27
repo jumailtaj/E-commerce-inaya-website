@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import LoginButton from '../components/LoginButton';
-import { trackCompleteRegistration } from '../../utils/metaPixel';
+import { trackCompleteRegistration } from '@/utils/metaPixel';
 
 export function SignupPage() {
   const [formData, setFormData] = useState({

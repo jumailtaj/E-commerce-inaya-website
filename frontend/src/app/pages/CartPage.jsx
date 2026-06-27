@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 
-import { trackInitiateCheckout } from '../../utils/metaPixel';
+import { trackInitiateCheckout } from '@/utils/metaPixel';
 
 export function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();

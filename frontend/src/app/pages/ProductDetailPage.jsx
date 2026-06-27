@@ -8,7 +8,7 @@ import { ProductCard } from '../components/ProductCard';
 import GoogleAd from '../components/GoogleAd';
 import { toast } from 'sonner';
 import api from '../../api/axios';
-import { trackViewContent, trackAddToCart as metaTrackAddToCart, trackInitiateCheckout } from '../../utils/metaPixel';
+import { trackViewContent, trackAddToCart as metaTrackAddToCart, trackInitiateCheckout } from '@/utils/metaPixel';
 
 export function ProductDetailPage() {
   const { id } = useParams();
